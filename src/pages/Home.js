@@ -6,6 +6,7 @@ import Categories from '../components/Categories';
 import Campaign from '../components/Campaign';
 import Comments from '../components/Comments';
 import Footer from '../components/Footer';
+import Brands from '../components/Brands';
 
 function Home() {
   return (
@@ -16,6 +17,7 @@ function Home() {
       <Campaign />
       <Comments />
       <SliderTwo />
+      <Brands/>
       {/* Diğer home sayfası içerikleri buraya eklenecek */}
       <Footer />
     </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../assets/css/Navbar.css';
 import logo from '../assets/img/logo.jpg';
+import { Link } from 'react-router-dom';
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -44,10 +45,10 @@ function Navbar() {
             <span></span>
           </div>
           <ul className={`navbar-menu${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(false)}>
-            <li><a href="#">Ana Sayfa</a></li>
-            <li><a href="#">Alışveriş</a></li>
-            <li><a href="#">Hakkımızda</a></li>
-            <li><a href="#">İletişim</a></li>
+            <li><Link to="/">Ana Sayfa</Link></li>
+            <li><a href="/shopping">Alışveriş</a></li>
+            <li><a href="/about">Hakkımızda</a></li>
+            <li><Link to="/iletisim">İletişim</Link></li>
           </ul>
         </nav>
       </div>

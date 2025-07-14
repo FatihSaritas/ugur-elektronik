@@ -1,14 +1,17 @@
 import React from 'react';
 import './App.css';
 import Home from './pages/Home';
-import SliderOne from './components/SliderOne';
+import Contact from './pages/Contact';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
-    <div>
-
-      <Home />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/iletisim" element={<Contact />} />
+      </Routes>
+    </Router>
   );
 }
 

@@ -19,7 +19,7 @@ function Footer() {
               <button className="btn btn-warning fw-bold px-4" type="submit">Abone Olun</button>
             </form>
             <small className="d-block mt-2 text-secondary">
-              Abone olarak <a href="#" className="text-warning text-decoration-underline">Şartlar ve Koşullar ve Gizlilik ve Çerez Politikası</a>'nı kabul etmiş olursunuz.
+              Abone olarak <a href='gizlilik-politikası' className="text-warning text-decoration-underline">Şartlar ve Koşullar ve Gizlilik ve Çerez Politikası</a>'nı kabul etmiş olursunuz.
             </small>
           </div>
           <div className="col-md-4 text-md-end d-flex flex-column justify-content-between">
@@ -27,9 +27,9 @@ function Footer() {
             <a href="tel:+905301627748" className="h5 text-warning fw-bold d-block mb-1">(+90) 530 162 77 48</a>
             <p className="mb-0 text-secondary">Sabah 8:00 - Akşam 7:00 arası Hizmetinizdeyiz.</p>
             <ul className="list-inline">
-              <li className="list-inline-item"><a href="#" className="text-secondary text-decoration-none">Gizlilik Politikası</a></li>
-              <li className="list-inline-item"><a href="#" className="text-secondary text-decoration-none">Şartlar ve Koşullar</a></li>
-              <li className="list-inline-item"><a href="#" className="text-secondary text-decoration-none">İade Politikası</a></li>
+              <li className="list-inline-item"><a href='gizlilik-politikası'className="text-secondary text-decoration-none">Gizlilik Politikası</a></li>
+              <li className="list-inline-item"><a href='gizlilik-politikası' className="text-secondary text-decoration-none">Şartlar ve Koşullar</a></li>
+              <li className="list-inline-item"><a href='gizlilik-politikası' className="text-secondary text-decoration-none">İade Politikası</a></li>
             </ul>
           </div>
         </div>
