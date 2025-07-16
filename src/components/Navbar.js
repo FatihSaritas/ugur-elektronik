@@ -47,7 +47,7 @@ function Navbar() {
           <ul className={`navbar-menu${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(false)}>
             <li><Link to="/">Ana Sayfa</Link></li>
             <li><a href="/shopping">Alışveriş</a></li>
-            <li><a href="/about">Hakkımızda</a></li>
+            <li><a href="/About">Hakkımızda</a></li>
             <li><Link to="/iletisim">İletişim</Link></li>
           </ul>
         </nav>
