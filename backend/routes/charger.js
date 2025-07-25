@@ -1,50 +1,50 @@
 const express = require('express');
-const Television = require('../models/Television');
+const Charger = require('../models/Charger');
 const router = express.Router();
 
-// Tüm televizyonları getir
+// Tüm şarj cihazlarını getir
 router.get('/', async (req, res) => {
   try {
-    const televisions = await Television.find().sort({ createdAt: -1 });
-    res.json(televisions);
+    const chargers = await Charger.find().sort({ createdAt: -1 });
+    res.json(chargers);
   } catch (err) {
     res.status(500).json({ message: 'Sunucu hatası', error: err.message });
   }
 });
 
-// Yeni televizyon ekle
+// Yeni şarj cihazı ekle
 router.post('/', async (req, res) => {
   const { name, brand, price, features, image } = req.body;
   if (!name || !brand || !price) {
     return res.status(400).json({ message: 'İsim, marka ve fiyat zorunludur.' });
   }
   try {
-    const tv = new Television({ name, brand, price, features, image });
-    await tv.save();
-    res.status(201).json(tv);
+    const charger = new Charger({ name, brand, price, features, image });
+    await charger.save();
+    res.status(201).json(charger);
   } catch (err) {
-    console.error('POST /api/television error:', err);
+    console.error('POST /api/charger error:', err);
     res.status(500).json({ message: 'Sunucu hatası', error: err.message, stack: err.stack });
   }
 });
 
-// Televizyon güncelle
+// Şarj cihazı güncelle
 router.put('/:id', async (req, res) => {
   try {
-    const tv = await Television.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-    if (!tv) return res.status(404).json({ message: 'Televizyon bulunamadı' });
-    res.json(tv);
+    const charger = await Charger.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    if (!charger) return res.status(404).json({ message: 'Şarj cihazı bulunamadı' });
+    res.json(charger);
   } catch (err) {
-    console.error('PUT /api/television/:id error:', err);
+    console.error('PUT /api/charger/:id error:', err);
     res.status(500).json({ message: 'Sunucu hatası', error: err.message, stack: err.stack });
   }
 });
 
-// Televizyon sil
+// Şarj cihazı sil
 router.delete('/:id', async (req, res) => {
   try {
-    const tv = await Television.findByIdAndDelete(req.params.id);
-    if (!tv) return res.status(404).json({ message: 'Televizyon bulunamadı' });
+    const charger = await Charger.findByIdAndDelete(req.params.id);
+    if (!charger) return res.status(404).json({ message: 'Şarj cihazı bulunamadı' });
     res.json({ message: 'Silindi' });
   } catch (err) {
     res.status(500).json({ message: 'Sunucu hatası', error: err.message });

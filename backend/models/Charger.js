@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const televisionSchema = new mongoose.Schema({
+const chargerSchema = new mongoose.Schema({
   name: { type: String, required: true },
   brand: { type: String, required: true },
   price: { type: Number, required: true },
@@ -9,4 +9,4 @@ const televisionSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Television', televisionSchema); 
+module.exports = mongoose.model('Charger', chargerSchema); 

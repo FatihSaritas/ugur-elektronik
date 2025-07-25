@@ -25,7 +25,7 @@ const AdminLogin = ({ onLogin }) => {
         localStorage.setItem('adminToken', res.data.token);
         setSuccess(true);
         setTimeout(() => {
-          if (onLogin) onLogin();
+        if (onLogin) onLogin();
         }, 1000);
       }
     } catch (err) {

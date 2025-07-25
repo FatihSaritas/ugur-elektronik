@@ -1,50 +1,50 @@
 const express = require('express');
-const Television = require('../models/Television');
+const Led = require('../models/Led');
 const router = express.Router();
 
-// Tüm televizyonları getir
+// Tüm ledleri getir
 router.get('/', async (req, res) => {
   try {
-    const televisions = await Television.find().sort({ createdAt: -1 });
-    res.json(televisions);
+    const leds = await Led.find().sort({ createdAt: -1 });
+    res.json(leds);
   } catch (err) {
     res.status(500).json({ message: 'Sunucu hatası', error: err.message });
   }
 });
 
-// Yeni televizyon ekle
+// Yeni led ekle
 router.post('/', async (req, res) => {
   const { name, brand, price, features, image } = req.body;
   if (!name || !brand || !price) {
     return res.status(400).json({ message: 'İsim, marka ve fiyat zorunludur.' });
   }
   try {
-    const tv = new Television({ name, brand, price, features, image });
-    await tv.save();
-    res.status(201).json(tv);
+    const led = new Led({ name, brand, price, features, image });
+    await led.save();
+    res.status(201).json(led);
   } catch (err) {
-    console.error('POST /api/television error:', err);
+    console.error('POST /api/led error:', err);
     res.status(500).json({ message: 'Sunucu hatası', error: err.message, stack: err.stack });
   }
 });
 
-// Televizyon güncelle
+// Led güncelle
 router.put('/:id', async (req, res) => {
   try {
-    const tv = await Television.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-    if (!tv) return res.status(404).json({ message: 'Televizyon bulunamadı' });
-    res.json(tv);
+    const led = await Led.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    if (!led) return res.status(404).json({ message: 'Led bulunamadı' });
+    res.json(led);
   } catch (err) {
-    console.error('PUT /api/television/:id error:', err);
+    console.error('PUT /api/led/:id error:', err);
     res.status(500).json({ message: 'Sunucu hatası', error: err.message, stack: err.stack });
   }
 });
 
-// Televizyon sil
+// Led sil
 router.delete('/:id', async (req, res) => {
   try {
-    const tv = await Television.findByIdAndDelete(req.params.id);
-    if (!tv) return res.status(404).json({ message: 'Televizyon bulunamadı' });
+    const led = await Led.findByIdAndDelete(req.params.id);
+    if (!led) return res.status(404).json({ message: 'Led bulunamadı' });
     res.json({ message: 'Silindi' });
   } catch (err) {
     res.status(500).json({ message: 'Sunucu hatası', error: err.message });

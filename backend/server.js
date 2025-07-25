@@ -23,6 +23,8 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/television', require('./routes/television'));
 app.use('/api/upload', require('./routes/upload'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/api/led', require('./routes/led'));
+app.use('/api/charger', require('./routes/charger'));
 
 // Basit Test Rotası
 app.get('/test', (req, res) => {
