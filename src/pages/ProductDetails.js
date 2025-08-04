@@ -15,7 +15,7 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import axios from 'axios';
+import api from '../config/axios';
 import Navbar from '../components/Navbar';
 import SEO from '../components/SEO';
 import '../assets/css/ProductDetails.css';
@@ -54,7 +54,7 @@ function ProductDetails() {
             return;
         }
 
-        const response = await axios.get(endpoint);
+        const response = await api.get(endpoint);
         setProduct(response.data);
       } catch (err) {
         console.error('Ürün yüklenirken hata:', err);

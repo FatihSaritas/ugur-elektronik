@@ -8,7 +8,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import '../../assets/css/shopping/Shopping.css'
-import axios from 'axios';
+import api from '../../config/axios';
 import Pagination from '@mui/material/Pagination';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../Footer';
@@ -83,7 +83,7 @@ function ShoppingProduct() {
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        const res = await axios.get('/api/brand');
+        const res = await api.get('/api/brand');
         if (res.data && res.data.length > 0) {
           const apiBrands = res.data.map(brand => ({
             name: brand.name,
@@ -113,7 +113,7 @@ function ShoppingProduct() {
   const fetchTelevisions = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('/api/television');
+      const res = await api.get('/api/television');
       setTvProducts(res.data);
     } catch (err) {
       setTvProducts([]);
@@ -125,7 +125,7 @@ function ShoppingProduct() {
   const fetchLeds = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('/api/led');
+      const res = await api.get('/api/led');
       setLedProducts(res.data);
     } catch (err) {
       setLedProducts([]);
@@ -137,7 +137,7 @@ function ShoppingProduct() {
   const fetchChargers = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('/api/charger');
+      const res = await api.get('/api/charger');
       setChargerProducts(res.data);
     } catch (err) {
       setChargerProducts([]);

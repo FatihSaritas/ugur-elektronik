@@ -10,7 +10,7 @@ import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import { Box, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../config/axios';
 
 const categories = [
   { name: 'Televizyon', icon: <TvIcon /> },
@@ -90,7 +90,7 @@ const Dashboard = () => {
 
   const fetchTelevisions = async () => {
     try {
-      const res = await axios.get('/api/television');
+      const res = await api.get('/api/television');
       setTvList(res.data);
     } catch (err) {
       setTvError('Televizyonlar yüklenemedi.');
@@ -112,7 +112,7 @@ const Dashboard = () => {
       return;
     }
     try {
-      await axios.post('/api/television', {
+      await api.post('/api/television', {
         name: tvForm.name,
         brand: tvForm.brand,
         price: Number(tvForm.price),
@@ -140,7 +140,7 @@ const Dashboard = () => {
       for (const file of files) {
         const formData = new FormData();
         formData.append('image', file);
-        const res = await axios.post('/api/upload', formData, {
+        const res = await api.post('/api/upload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
         uploadedImages.push(res.data.url);
@@ -163,7 +163,7 @@ const Dashboard = () => {
 
   const fetchLeds = async () => {
     try {
-      const res = await axios.get('/api/led');
+      const res = await api.get('/api/led');
       setLedList(res.data);
     } catch (err) {
       setLedError('Led ürünleri yüklenemedi.');
@@ -185,7 +185,7 @@ const Dashboard = () => {
       return;
     }
     try {
-      await axios.post('/api/led', {
+      await api.post('/api/led', {
         name: ledForm.name,
         brand: ledForm.brand,
         price: Number(ledForm.price),
@@ -213,7 +213,7 @@ const Dashboard = () => {
       for (const file of files) {
         const formData = new FormData();
         formData.append('image', file);
-        const res = await axios.post('/api/upload', formData, {
+        const res = await api.post('/api/upload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
         uploadedImages.push(res.data.url);
@@ -236,7 +236,7 @@ const Dashboard = () => {
 
   const fetchChargers = async () => {
     try {
-      const res = await axios.get('/api/charger');
+      const res = await api.get('/api/charger');
       setChargerList(res.data);
     } catch (err) {
       setChargerError('Şarj cihazları yüklenemedi.');
@@ -258,7 +258,7 @@ const Dashboard = () => {
       return;
     }
     try {
-      await axios.post('/api/charger', {
+      await api.post('/api/charger', {
         name: chargerForm.name,
         brand: chargerForm.brand,
         price: Number(chargerForm.price),
@@ -286,7 +286,7 @@ const Dashboard = () => {
       for (const file of files) {
         const formData = new FormData();
         formData.append('image', file);
-        const res = await axios.post('/api/upload', formData, {
+        const res = await api.post('/api/upload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
         uploadedImages.push(res.data.url);
@@ -310,7 +310,7 @@ const Dashboard = () => {
   // Televizyon Sil
   const handleDeleteTv = async (id) => {
     try {
-      await axios.delete(`/api/television/${id}`);
+      await api.delete(`/api/television/${id}`);
       setTvList((prev) => prev.filter((tv) => tv._id !== id));
     } catch (err) {
       setTvError('Silme başarısız.');
@@ -320,7 +320,7 @@ const Dashboard = () => {
   // Led Sil
   const handleDeleteLed = async (id) => {
     try {
-      await axios.delete(`/api/led/${id}`);
+      await api.delete(`/api/led/${id}`);
       setLedList((prev) => prev.filter((led) => led._id !== id));
     } catch (err) {
       setLedError('Silme başarısız.');
@@ -330,7 +330,7 @@ const Dashboard = () => {
   // Charger Sil
   const handleDeleteCharger = async (id) => {
     try {
-      await axios.delete(`/api/charger/${id}`);
+      await api.delete(`/api/charger/${id}`);
       setChargerList((prev) => prev.filter((charger) => charger._id !== id));
     } catch (err) {
       setChargerError('Silme başarısız.');
@@ -360,7 +360,7 @@ const Dashboard = () => {
       for (const file of files) {
         const formData = new FormData();
         formData.append('image', file);
-        const res = await axios.post('/api/upload', formData, {
+        const res = await api.post('/api/upload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
         uploadedImages.push(res.data.url);
@@ -379,7 +379,7 @@ const Dashboard = () => {
   const handleEditTvSave = async () => {
     setEditTvLoading(true);
     try {
-      const res = await axios.put(`/api/television/${editingTvId}`, editTvForm);
+      const res = await api.put(`/api/television/${editingTvId}`, editTvForm);
       setTvList((prev) => prev.map((tv) => tv._id === editingTvId ? res.data : tv));
       setEditingTvId(null);
     } catch (err) {
@@ -415,7 +415,7 @@ const Dashboard = () => {
       for (const file of files) {
         const formData = new FormData();
         formData.append('image', file);
-        const res = await axios.post('/api/upload', formData, {
+        const res = await api.post('/api/upload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
         uploadedImages.push(res.data.url);
@@ -434,7 +434,7 @@ const Dashboard = () => {
   const handleEditLedSave = async () => {
     setEditLedLoading(true);
     try {
-      const res = await axios.put(`/api/led/${editingLedId}`, editLedForm);
+      const res = await api.put(`/api/led/${editingLedId}`, editLedForm);
       setLedList((prev) => prev.map((led) => led._id === editingLedId ? res.data : led));
       setEditingLedId(null);
     } catch (err) {
@@ -470,7 +470,7 @@ const Dashboard = () => {
       for (const file of files) {
         const formData = new FormData();
         formData.append('image', file);
-        const res = await axios.post('/api/upload', formData, {
+        const res = await api.post('/api/upload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
         uploadedImages.push(res.data.url);
@@ -489,7 +489,7 @@ const Dashboard = () => {
   const handleEditChargerSave = async () => {
     setEditChargerLoading(true);
     try {
-      const res = await axios.put(`/api/charger/${editingChargerId}`, editChargerForm);
+      const res = await api.put(`/api/charger/${editingChargerId}`, editChargerForm);
       setChargerList((prev) => prev.map((charger) => charger._id === editingChargerId ? res.data : charger));
       setEditingChargerId(null);
     } catch (err) {
@@ -505,7 +505,7 @@ const Dashboard = () => {
   // Brand functions
   const fetchBrands = async () => {
     try {
-      const res = await axios.get('/api/brand/admin');
+      const res = await api.get('/api/brand/admin');
       setBrandList(res.data);
     } catch (err) {
       setBrandError('Markalar yüklenemedi.');
@@ -532,7 +532,7 @@ const Dashboard = () => {
       return;
     }
     try {
-      await axios.post('/api/brand', {
+      await api.post('/api/brand', {
         name: brandForm.name,
         image: brandForm.image
       });
@@ -554,7 +554,7 @@ const Dashboard = () => {
     try {
       const formData = new FormData();
       formData.append('image', file);
-      const res = await axios.post('/api/upload', formData, {
+      const res = await api.post('/api/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setBrandForm((prev) => ({ ...prev, image: res.data.url }));
@@ -567,7 +567,7 @@ const Dashboard = () => {
 
   const handleDeleteBrand = async (id) => {
     try {
-      await axios.delete(`/api/brand/${id}`);
+      await api.delete(`/api/brand/${id}`);
       setBrandList((prev) => prev.filter((brand) => brand._id !== id));
     } catch (err) {
       setBrandError('Silme başarısız.');
@@ -590,7 +590,7 @@ const Dashboard = () => {
     try {
       const formData = new FormData();
       formData.append('image', file);
-      const res = await axios.post('/api/upload', formData, {
+      const res = await api.post('/api/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setEditBrandForm((prev) => ({ ...prev, image: res.data.url }));
@@ -604,7 +604,7 @@ const Dashboard = () => {
   const handleEditBrandSave = async () => {
     setEditBrandLoading(true);
     try {
-      const res = await axios.put(`/api/brand/${editingBrandId}`, editBrandForm);
+      const res = await api.put(`/api/brand/${editingBrandId}`, editBrandForm);
       setBrandList((prev) => prev.map((brand) => brand._id === editingBrandId ? res.data : brand));
       setEditingBrandId(null);
     } catch (err) {
@@ -620,7 +620,7 @@ const Dashboard = () => {
 
   const handleToggleBrandStatus = async (id, isActive) => {
     try {
-      const res = await axios.put(`/api/brand/${id}`, { isActive });
+      const res = await api.put(`/api/brand/${id}`, { isActive });
       setBrandList((prev) => prev.map((brand) => brand._id === id ? res.data : brand));
     } catch (err) {
       setBrandError('Durum güncellenemedi.');

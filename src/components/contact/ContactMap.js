@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import axios from 'axios'
+import api from '../../config/axios'
 import '../../assets/css/contact-css/ContactMap.css'
 
 function ContactMap() {
@@ -66,7 +66,7 @@ function ContactMap() {
     setMessage({ type: '', text: '' });
     
     try {
-      const response = await axios.post('http://localhost:5050/api/contact/send', formData, {
+      const response = await api.post('http://localhost:5050/api/contact/send', formData, {
         headers: {
           'Content-Type': 'application/json',
         },

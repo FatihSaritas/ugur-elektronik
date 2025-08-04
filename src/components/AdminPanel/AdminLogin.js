@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../../config/axios';
 import { Box, Paper, Typography, TextField, Button, Alert, CircularProgress } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Avatar from '@mui/material/Avatar';
@@ -17,7 +17,7 @@ const AdminLogin = ({ onLogin }) => {
     setError('');
     setSuccess(false);
     try {
-      const res = await axios.post('http://localhost:5050/api/admin/login', {
+      const res = await api.post('http://localhost:5050/api/admin/login', {
         email,
         password,
       });
