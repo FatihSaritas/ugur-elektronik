@@ -4,8 +4,16 @@ const path = require('path');
 
 const router = express.Router();
 
-// Vercel serverless functions için memory storage kullan
-const storage = multer.memoryStorage();
+// Railway için disk storage kullan
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + '-' + file.originalname);
+  }
+});
 
 const upload = multer({ 
   storage,
@@ -20,13 +28,10 @@ router.post('/', upload.single('image'), (req, res) => {
     return res.status(400).json({ message: 'Dosya yüklenemedi.' });
   }
   
-  // Vercel'de dosya sistemi yazma izni yok, bu yüzden base64 döndürüyoruz
-  // Gerçek uygulamada cloud storage (AWS S3, Cloudinary vb.) kullanılmalı
-  const base64Image = req.file.buffer.toString('base64');
-  const mimeType = req.file.mimetype;
-  const dataUrl = `data:${mimeType};base64,${base64Image}`;
+  // Railway'de dosya yolu döndürüyoruz
+  const imageUrl = `/uploads/${req.file.filename}`;
   
-  res.json({ url: dataUrl });
+  res.json({ url: imageUrl });
 });
 
 module.exports = router; 
