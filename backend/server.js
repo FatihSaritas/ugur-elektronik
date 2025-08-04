@@ -24,6 +24,7 @@ app.use(cors({
     'https://ugur-elektronik-d2g3h5egq-fatihsaritas-projects.vercel.app',
     'https://ugur-elektronik-k9nopurvt-fatihsaritas-projects.vercel.app',
     'https://ugur-elektronik-lv12zvd97-fatihsaritas-projects.vercel.app',
+    'https://ugur-elektronik-8bht90syk-fatihsaritas-projects.vercel.app',
     process.env.FRONTEND_URL
   ].filter(Boolean),
   credentials: true,
