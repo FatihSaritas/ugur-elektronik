@@ -41,6 +41,7 @@ app.use('/api/led', require('./routes/led'));
 app.use('/api/charger', require('./routes/charger'));
 app.use('/api/brand', require('./routes/brand'));
 app.use('/api/contact', require('./routes/contact'));
+app.use('/api/test', require('./test'));
 
 // Basit Test Rotası
 app.get('/test', (req, res) => {
