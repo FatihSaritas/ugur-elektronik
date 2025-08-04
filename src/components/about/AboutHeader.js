@@ -1,8 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
 import '../../assets/css/about-css/AboutHeader.css';
 import { motion } from "framer-motion";
+import { Dialog, DialogContent, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
 
 function AboutHeader() {
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imageDialogOpen, setImageDialogOpen] = useState(false);
+
+  const handleImageClick = (imageSrc, imageAlt) => {
+    setSelectedImage({ src: imageSrc, alt: imageAlt });
+    setImageDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setImageDialogOpen(false);
+    setSelectedImage(null);
+  };
+
   return (
     <section className="about-header-root">
       <motion.div
@@ -164,10 +180,81 @@ function AboutHeader() {
         <div className="about-header-works">
           <h2 className="about-header-section-title">Yaptığı Çalışmalar</h2>
           <span className="about-header-divider"></span>
-          <div className="about-header-works-list">
-            <span className="about-header-works-item">1</span>
-            <span className="about-header-works-item">2</span>
-            <span className="about-header-works-item">3</span>
+          <div className="about-header-works-container">
+            <div className="about-header-work-item">
+              <div className="about-header-work-image">
+                <div className="image-container" onClick={() => handleImageClick(require('../../assets/img/WorkPhoto/ugur-1.jpeg'), 'LED Aydınlatma Projesi')}>
+                  <img src={require('../../assets/img/WorkPhoto/ugur-1.jpeg')} alt="LED Aydınlatma Projesi" />
+                  <div className="zoom-overlay">
+                    <ZoomInIcon />
+                  </div>
+                </div>
+              </div>
+              <div className="about-header-work-description">
+                <h3>LED Aydınlatma Sistemleri</h3>
+                <p>Modern LED aydınlatma sistemleri tasarımı ve kurulumu. Enerji tasarruflu, uzun ömürlü ve estetik aydınlatma çözümleri sunuyorum. Hem konut hem de ticari mekanlar için özel tasarımlar. Profesyonel ekipmanlarla kaliteli hizmet.</p>
+              </div>
+            </div>
+            
+            <div className="about-header-work-item">
+              <div className="about-header-work-image">
+                <div className="image-container" onClick={() => handleImageClick(require('../../assets/img/WorkPhoto/ugur-2.jpeg'), 'Elektrik Panosu Kurulumu')}>
+                  <img src={require('../../assets/img/WorkPhoto/ugur-2.jpeg')} alt="Elektrik Panosu Kurulumu" />
+                  <div className="zoom-overlay">
+                    <ZoomInIcon />
+                  </div>
+                </div>
+              </div>
+              <div className="about-header-work-description">
+                <h3>Elektrik Panosu Kurulumu ve Bakımı</h3>
+                <p>Elektrik panolarının kurulumu, bakımı ve onarımı. Güvenlik standartlarına uygun, kaliteli malzemelerle profesyonel hizmet. Ev ve işyeri elektrik sistemleri için güvenilir çözümler.</p>
+              </div>
+            </div>
+            
+            <div className="about-header-work-item">
+              <div className="about-header-work-image">
+                <div className="image-container" onClick={() => handleImageClick(require('../../assets/img/WorkPhoto/ugur-3.jpeg'), 'Elektrikli Araç Şarj İstasyonu')}>
+                  <img src={require('../../assets/img/WorkPhoto/ugur-3.jpeg')} alt="Elektrikli Araç Şarj İstasyonu" />
+                  <div className="zoom-overlay">
+                    <ZoomInIcon />
+                  </div>
+                </div>
+              </div>
+              <div className="about-header-work-description">
+                <h3>Elektrikli Araç Şarj İstasyonları</h3>
+                <p>Elektrikli araç şarj istasyonlarının kurulumu, bakımı ve onarımı. Ev tipi ve ticari şarj cihazları. Güvenli ve hızlı şarj çözümleri. Modern teknoloji ile uyumlu sistemler.</p>
+              </div>
+            </div>
+            
+            <div className="about-header-work-item">
+              <div className="about-header-work-image">
+                <div className="image-container" onClick={() => handleImageClick(require('../../assets/img/WorkPhoto/ugur-4.jpeg'), 'Televizyon Tamiri')}>
+                  <img src={require('../../assets/img/WorkPhoto/ugur-4.jpeg')} alt="Televizyon Tamiri" />
+                  <div className="zoom-overlay">
+                    <ZoomInIcon />
+                  </div>
+                </div>
+              </div>
+              <div className="about-header-work-description">
+                <h3>Televizyon Tamiri ve Bakımı</h3>
+                <p>Profesyonel televizyon tamiri hizmetleri. Tüm marka ve modellerde uzmanlık. Hızlı, güvenilir ve kaliteli onarım hizmetleri. Garantili çalışma ve müşteri memnuniyeti odaklı hizmet.</p>
+              </div>
+            </div>
+            
+            <div className="about-header-work-item">
+              <div className="about-header-work-image">
+                <div className="image-container" onClick={() => handleImageClick(require('../../assets/img/WorkPhoto/ugur-5.jpeg'), 'Elektrik Sistemleri')}>
+                  <img src={require('../../assets/img/WorkPhoto/ugur-5.jpeg')} alt="Elektrik Sistemleri" />
+                  <div className="zoom-overlay">
+                    <ZoomInIcon />
+                  </div>
+                </div>
+              </div>
+              <div className="about-header-work-description">
+                <h3>Elektrik Sistemleri ve Otomasyon</h3>
+                <p>Elektrik sistemleri kurulumu, bakımı ve otomasyon çözümleri. Akıllı ev sistemleri, güvenlik sistemleri ve enerji verimliliği projeleri. Teknolojik gelişmeleri takip eden modern çözümler.</p>
+              </div>
+            </div>
           </div>
         </div>
         <div className="about-header-links">
@@ -189,6 +276,49 @@ function AboutHeader() {
           </ul>
         </div>
       </div>
+      
+      {/* Fotoğraf Modal Dialog */}
+      <Dialog 
+        open={imageDialogOpen} 
+        onClose={handleCloseDialog}
+        maxWidth="lg"
+        fullWidth
+        PaperProps={{
+          style: {
+            backgroundColor: 'transparent',
+            boxShadow: 'none',
+            overflow: 'hidden'
+          }
+        }}
+      >
+        <DialogContent style={{ padding: 0, position: 'relative' }}>
+          <IconButton
+            onClick={handleCloseDialog}
+            style={{
+              position: 'absolute',
+              top: 10,
+              right: 10,
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              color: 'white',
+              zIndex: 1000
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          {selectedImage && (
+            <img 
+              src={selectedImage.src} 
+              alt={selectedImage.alt}
+              style={{
+                width: '100%',
+                height: 'auto',
+                maxHeight: '90vh',
+                objectFit: 'contain'
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   )
 }

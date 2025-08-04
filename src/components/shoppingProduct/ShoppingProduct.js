@@ -11,6 +11,7 @@ import '../../assets/css/shopping/Shopping.css'
 import axios from 'axios';
 import Pagination from '@mui/material/Pagination';
 import { useNavigate } from 'react-router-dom';
+import Footer from '../Footer';
 
 const categories = [
   { name: 'Televizyon', icon: <TvIcon className="category-icon" /> },
@@ -146,9 +147,11 @@ function ShoppingProduct() {
   };
 
   const handleBrandSelect = (brandName) => {
+    // Eğer aynı markaya tekrar tıklanırsa filtreyi kaldır
     if (selectedBrand === brandName) {
       setSelectedBrand(null);
     } else {
+      // Farklı bir markaya tıklanırsa o markayı seç
       setSelectedBrand(brandName);
     }
     setPage(1);
@@ -243,7 +246,56 @@ function ShoppingProduct() {
     setDragOffset(0);
   };
 
-  // Mevcut ürünleri getir
+  // Tüm ürünleri getir (kategori sınırlaması olmadan)
+  const getAllProducts = () => {
+    const allProducts = [];
+    
+    // Televizyon ürünleri
+    tvProducts.forEach(tv => {
+      allProducts.push({
+        id: tv._id,
+        name: tv.name,
+        brand: tv.brand,
+        price: tv.price + ' TL',
+        priceRaw: Number(tv.price),
+        images: tv.images || [],
+        features: tv.features,
+        category: 'Televizyon'
+      });
+    });
+    
+    // LED ürünleri
+    ledProducts.forEach(led => {
+      allProducts.push({
+        id: led._id,
+        name: led.name,
+        brand: led.brand,
+        price: led.price + ' TL',
+        priceRaw: Number(led.price),
+        images: led.images || [],
+        features: led.features,
+        category: 'LED'
+      });
+    });
+    
+    // Şarj Cihazı ürünleri
+    chargerProducts.forEach(charger => {
+      allProducts.push({
+        id: charger._id,
+        name: charger.name,
+        brand: charger.brand,
+        price: charger.price + ' TL',
+        priceRaw: Number(charger.price),
+        images: charger.images || [],
+        features: charger.features,
+        category: 'Şarj Cihazı'
+      });
+    });
+    
+    return allProducts;
+  };
+
+  // Mevcut ürünleri getir (kategori bazlı)
   const getCurrentProducts = () => {
     if (selectedCategory === 'Televizyon') {
       return tvProducts.map(tv => ({
@@ -253,7 +305,8 @@ function ShoppingProduct() {
         price: tv.price + ' TL',
         priceRaw: Number(tv.price),
         images: tv.images || [],
-        features: tv.features
+        features: tv.features,
+        category: 'Televizyon'
       }));
     } else if (selectedCategory === 'LED') {
       return ledProducts.map(led => ({
@@ -263,7 +316,8 @@ function ShoppingProduct() {
         price: led.price + ' TL',
         priceRaw: Number(led.price),
         images: led.images || [],
-        features: led.features
+        features: led.features,
+        category: 'LED'
       }));
     } else if (selectedCategory === 'Şarj Cihazı') {
       return chargerProducts.map(charger => ({
@@ -273,44 +327,27 @@ function ShoppingProduct() {
         price: charger.price + ' TL',
         priceRaw: Number(charger.price),
         images: charger.images || [],
-        features: charger.features
+        features: charger.features,
+        category: 'Şarj Cihazı'
       }));
     }
     return staticProducts;
   };
 
-  let productsToShow = getCurrentProducts();
+  // Marka seçiliyse tüm ürünlerden filtrele, değilse kategori bazlı göster
+  let productsToShow = selectedBrand ? getAllProducts() : getCurrentProducts();
 
   if (selectedBrand) {
-    console.log('Seçilen marka:', selectedBrand);
-    console.log('Mevcut ürünler ve markaları:', productsToShow.map(p => ({ name: p.name, brand: p.brand })));
-    
     productsToShow = productsToShow.filter(product => {
       if (!product.brand) return false;
       
-      const productBrand = product.brand.toLowerCase().trim();
-      const selectedBrandLower = selectedBrand.toLowerCase().trim();
+      // Büyük/küçük harf duyarlı tam eşleşme kontrolü
+      const productBrand = product.brand.trim();
+      const selectedBrandTrimmed = selectedBrand.trim();
       
-      console.log(`Ürün markası: "${product.brand}" -> "${productBrand}"`);
-      console.log(`Seçilen marka: "${selectedBrand}" -> "${selectedBrandLower}"`);
-      
-      // Tam eşleşme kontrolü
-      if (productBrand === selectedBrandLower) {
-        console.log('Tam eşleşme bulundu!');
-        return true;
-      }
-      
-      // Kısmi eşleşme kontrolü (eğer marka adı içinde seçilen marka varsa)
-      if (productBrand.includes(selectedBrandLower) || selectedBrandLower.includes(productBrand)) {
-        console.log('Kısmi eşleşme bulundu!');
-        return true;
-      }
-      
-      console.log('Eşleşme bulunamadı');
-      return false;
+      // Tam eşleşme kontrolü (büyük/küçük harf duyarlı)
+      return productBrand === selectedBrandTrimmed;
     });
-    
-    console.log('Filtrelenmiş ürünler:', productsToShow.length);
   }
 
   if (search.trim() !== '') {
@@ -334,7 +371,10 @@ function ShoppingProduct() {
 
   const handleProductClick = (product) => {
     let categoryPath = '';
-    switch (selectedCategory) {
+    // Ürünün kendi kategorisini kullan, eğer yoksa seçili kategoriyi kullan
+    const productCategory = product.category || selectedCategory;
+    
+    switch (productCategory) {
       case 'Televizyon':
         categoryPath = 'television';
         break;
@@ -681,6 +721,7 @@ function ShoppingProduct() {
           </Button>
         </DialogActions>
       </Dialog>
+      <Footer />
     </Box>
   )
 }

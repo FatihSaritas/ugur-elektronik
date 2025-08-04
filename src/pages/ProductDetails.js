@@ -17,6 +17,7 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import SEO from '../components/SEO';
 import '../assets/css/ProductDetails.css';
 
 function ProductDetails() {
@@ -164,6 +165,11 @@ function ProductDetails() {
 
   return (
     <div>
+      <SEO 
+        title={product.name}
+        description={`${product.name} - ${product.brand} markası. ${product.features || 'Profesyonel elektrik ve elektronik hizmetleri.'} Fiyat: ${product.price} TL. İstanbul Pendik'te Uğur Özoğlu elektrik hizmetleri.`}
+        keywords={`${product.name}, ${product.brand}, elektrik hizmetleri, LED aydınlatma, televizyon tamiri, şarj istasyonu, İstanbul elektrikçi, Pendik elektrikçi, Uğur Özoğlu, Tv Tamir, Pendik Televizyoncu, Pendik Tv Tamir, Ekran Tamiri, Led tasarlatma, Pendik Araç Şarj, Uyguna Tv tamiri, Uğur Elektronik`}
+      />
       <Navbar />
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
         <Button 

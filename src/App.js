@@ -7,6 +7,7 @@ import Contact from './pages/Contact';
 import Dashboard from './pages/Dashboard';
 import AdminPanel from './pages/AdminPanel';
 import ProductDetails from './pages/ProductDetails';
+import CaaLMessage from './components/CaaLMessage';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 
@@ -23,6 +24,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/product/:category/:id" element={<ProductDetails />} />
         </Routes>
+        <CaaLMessage />
       </Router>
     </div>
   );

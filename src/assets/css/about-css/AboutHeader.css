@@ -76,21 +76,94 @@
   margin-bottom: 32px;
 }
 
-.about-header-works-list {
+.about-header-works-container {
   display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 8px;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 16px;
 }
 
-.about-header-works-item {
-  background: #f1f1f1;
-  padding: 7px 20px;
-  border-radius: 16px;
+.about-header-work-item {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  background: #fff6f6;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(229,57,53,0.04);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.about-header-work-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(229,57,53,0.08);
+}
+
+.about-header-work-image {
+  flex-shrink: 0;
+}
+
+.about-header-work-image {
+  position: relative;
+  cursor: pointer;
+}
+
+.about-header-work-image img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(229,57,53,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.about-header-work-image:hover img {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(229,57,53,0.2);
+}
+
+.zoom-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(229, 57, 53, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.about-header-work-image:hover .zoom-overlay {
+  opacity: 1;
+}
+
+.zoom-overlay svg {
+  color: white;
+  font-size: 2rem;
+}
+
+.about-header-work-description {
+  flex: 1;
+}
+
+.about-header-work-description h3 {
   color: #e53935;
-  font-weight: 600;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+
+.about-header-work-description p {
+  color: #555;
   font-size: 1rem;
-  box-shadow: 0 1px 4px rgba(229,57,53,0.04);
+  line-height: 1.6;
+  margin: 0;
+  text-align: justify;
 }
 
 .about-header-links {
@@ -139,18 +212,251 @@
   text-shadow: 0 2px 8px rgba(229,57,53,0.08);
 }
 
+/* Tablet Responsive */
+@media (max-width: 768px) {
+  .about-header-container {
+    max-width: 95%;
+    margin: 20px auto;
+    padding: 30px 20px;
+  }
+  
+  .about-header-title {
+    font-size: 2rem;
+  }
+  
+  .about-header-bio-foto img {
+    width: 280px;
+    height: 280px;
+  }
+  
+  .about-header-section-title {
+    font-size: 1.3rem;
+  }
+  
+  .about-header-bio-right {
+    font-size: 1rem;
+    padding: 16px;
+  }
+  
+  /* Tablet için çalışmalar bölümü */
+  .about-header-work-item {
+    gap: 16px;
+    padding: 18px;
+  }
+  
+  .about-header-work-image img {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .about-header-work-description h3 {
+    font-size: 1.1rem;
+  }
+  
+  .about-header-work-description p {
+    font-size: 0.95rem;
+  }
+  
+  .about-header-links-list {
+    gap: 12px;
+  }
+  
+  .about-header-link {
+    padding: 8px 18px;
+    font-size: 1rem;
+  }
+}
+
+/* Mobil Responsive */
 @media (max-width: 600px) {
   .about-header-container {
-    padding: 18px 6px;
+    padding: 20px 15px;
+    margin: 15px auto;
+    border-radius: 15px;
   }
+  
   .about-header-title {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
   }
+  
   .about-header-bio-foto img {
-    width: 90px;
-    height: 90px;
+    width: 200px;
+    height: 200px;
   }
+  
+  .about-header-section-title {
+    font-size: 1.2rem;
+    margin-top: 20px;
+  }
+  
   .about-header-bio-right {
-    padding: 10px 6px 8px 6px;
+    padding: 15px;
+    font-size: 0.95rem;
+    margin-bottom: 25px;
+  }
+  
+  /* Mobil için çalışmalar bölümü */
+  .about-header-work-item {
+    flex-direction: column;
+    gap: 15px;
+    padding: 18px;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .about-header-work-image {
+    width: 100%;
+    max-width: 250px;
+  }
+  
+  .about-header-work-image img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+  
+  .zoom-overlay svg {
+    font-size: 1.8rem;
+  }
+  
+  .about-header-work-description {
+    width: 100%;
+  }
+  
+  .about-header-work-description h3 {
+    font-size: 1.1rem;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .about-header-work-description p {
+    font-size: 0.9rem;
+    text-align: center;
+    line-height: 1.5;
+  }
+  
+  .about-header-links-list {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .about-header-link {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    width: 200px;
+    text-align: center;
+  }
+  
+  .about-header-signature {
+    font-size: 1.1rem;
+    margin-top: 20px;
+  }
+}
+
+/* Küçük Mobil Responsive */
+@media (max-width: 480px) {
+  .about-header-container {
+    padding: 15px 12px;
+    margin: 10px auto;
+  }
+  
+  .about-header-title {
+    font-size: 1.6rem;
+  }
+  
+  .about-header-bio-foto img {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .about-header-section-title {
+    font-size: 1.1rem;
+  }
+  
+  .about-header-bio-right {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+  
+  /* Küçük mobil için çalışmalar bölümü */
+  .about-header-work-item {
+    padding: 15px;
+    gap: 12px;
+  }
+  
+  .about-header-work-image img {
+    height: 150px;
+  }
+  
+  .about-header-work-description h3 {
+    font-size: 1rem;
+  }
+  
+  .about-header-work-description p {
+    font-size: 0.85rem;
+  }
+  
+  .about-header-link {
+    width: 180px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
+  
+  .about-header-signature {
+    font-size: 1rem;
+  }
+}
+
+/* Çok Küçük Mobil Responsive */
+@media (max-width: 360px) {
+  .about-header-container {
+    padding: 12px 10px;
+  }
+  
+  .about-header-title {
+    font-size: 1.4rem;
+  }
+  
+  .about-header-bio-foto img {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .about-header-section-title {
+    font-size: 1rem;
+  }
+  
+  .about-header-bio-right {
+    padding: 10px;
+    font-size: 0.85rem;
+  }
+  
+  /* Çok küçük mobil için çalışmalar bölümü */
+  .about-header-work-item {
+    padding: 12px;
+  }
+  
+  .about-header-work-image img {
+    height: 120px;
+  }
+  
+  .about-header-work-description h3 {
+    font-size: 0.95rem;
+  }
+  
+  .about-header-work-description p {
+    font-size: 0.8rem;
+  }
+  
+  .about-header-link {
+    width: 160px;
+    padding: 7px 14px;
+    font-size: 0.85rem;
+  }
+  
+  .about-header-signature {
+    font-size: 0.9rem;
   }
 }

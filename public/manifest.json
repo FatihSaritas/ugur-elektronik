@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Uğur Elektrik",
+  "name": "Uğur Özoğlu - Elektrik ve Elektronik Uzmanı",
+  "description": "LED aydınlatma, televizyon tamiri, elektrikli araç şarj istasyonları. İstanbul Pendik'te profesyonel elektrik hizmetleri.",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +21,8 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#e53935",
+  "background_color": "#ffffff",
+  "categories": ["business", "productivity"],
+  "lang": "tr"
 }
