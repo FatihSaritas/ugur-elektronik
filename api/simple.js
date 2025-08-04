@@ -1,4 +1,4 @@
-module.exports = (req, res) => {
+export default function handler(req, res) {
   try {
     res.status(200).json({ 
       message: 'Simple API is working!',
@@ -12,4 +12,4 @@ module.exports = (req, res) => {
       stack: error.stack 
     });
   }
-}; 
+} 
