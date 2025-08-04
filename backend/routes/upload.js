@@ -28,8 +28,8 @@ router.post('/', upload.single('image'), (req, res) => {
     return res.status(400).json({ message: 'Dosya yüklenemedi.' });
   }
   
-  // Railway'de dosya yolu döndürüyoruz
-  const imageUrl = `/uploads/${req.file.filename}`;
+  // Railway'de tam URL döndürüyoruz
+  const imageUrl = `https://ugur-elektronik-production-803b.up.railway.app/uploads/${req.file.filename}`;
   
   res.json({ url: imageUrl });
 });
