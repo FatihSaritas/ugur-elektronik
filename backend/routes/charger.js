@@ -2,11 +2,32 @@ const express = require('express');
 const Charger = require('../models/Charger');
 const router = express.Router();
 
+// Görsel URL'lerini tam URL'ye çeviren middleware
+const fixImageUrls = (charger) => {
+  if (charger.images && Array.isArray(charger.images)) {
+    charger.images = charger.images.map(imageUrl => {
+      // Eğer base64 ise, olduğu gibi bırak
+      if (imageUrl.startsWith('data:')) {
+        return imageUrl;
+      }
+      // Eğer relative path ise, tam URL'ye çevir
+      if (imageUrl.startsWith('/uploads/')) {
+        return `https://ugur-elektronik-production-803b.up.railway.app${imageUrl}`;
+      }
+      // Eğer zaten tam URL ise, olduğu gibi bırak
+      return imageUrl;
+    });
+  }
+  return charger;
+};
+
 // Tüm şarj cihazlarını getir
 router.get('/', async (req, res) => {
   try {
     const chargers = await Charger.find().sort({ createdAt: -1 });
-    res.json(chargers);
+    // Her charger için görsel URL'lerini düzelt
+    const fixedChargers = chargers.map(fixImageUrls);
+    res.json(fixedChargers);
   } catch (err) {
     res.status(500).json({ message: 'Sunucu hatası', error: err.message });
   }
@@ -19,7 +40,9 @@ router.get('/:id', async (req, res) => {
     if (!charger) {
       return res.status(404).json({ message: 'Şarj cihazı bulunamadı' });
     }
-    res.json(charger);
+    // Görsel URL'lerini düzelt
+    const fixedCharger = fixImageUrls(charger);
+    res.json(fixedCharger);
   } catch (err) {
     res.status(500).json({ message: 'Sunucu hatası', error: err.message });
   }

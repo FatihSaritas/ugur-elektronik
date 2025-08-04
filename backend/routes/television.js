@@ -2,11 +2,32 @@ const express = require('express');
 const Television = require('../models/Television');
 const router = express.Router();
 
+// Görsel URL'lerini tam URL'ye çeviren middleware
+const fixImageUrls = (television) => {
+  if (television.images && Array.isArray(television.images)) {
+    television.images = television.images.map(imageUrl => {
+      // Eğer base64 ise, olduğu gibi bırak
+      if (imageUrl.startsWith('data:')) {
+        return imageUrl;
+      }
+      // Eğer relative path ise, tam URL'ye çevir
+      if (imageUrl.startsWith('/uploads/')) {
+        return `https://ugur-elektronik-production-803b.up.railway.app${imageUrl}`;
+      }
+      // Eğer zaten tam URL ise, olduğu gibi bırak
+      return imageUrl;
+    });
+  }
+  return television;
+};
+
 // Tüm televizyonları getir
 router.get('/', async (req, res) => {
   try {
     const televisions = await Television.find().sort({ createdAt: -1 });
-    res.json(televisions);
+    // Her televizyon için görsel URL'lerini düzelt
+    const fixedTelevisions = televisions.map(fixImageUrls);
+    res.json(fixedTelevisions);
   } catch (err) {
     res.status(500).json({ message: 'Sunucu hatası', error: err.message });
   }
@@ -19,7 +40,9 @@ router.get('/:id', async (req, res) => {
     if (!television) {
       return res.status(404).json({ message: 'Televizyon bulunamadı' });
     }
-    res.json(television);
+    // Görsel URL'lerini düzelt
+    const fixedTelevision = fixImageUrls(television);
+    res.json(fixedTelevision);
   } catch (err) {
     res.status(500).json({ message: 'Sunucu hatası', error: err.message });
   }

@@ -2,11 +2,32 @@ const express = require('express');
 const Led = require('../models/Led');
 const router = express.Router();
 
+// Görsel URL'lerini tam URL'ye çeviren middleware
+const fixImageUrls = (led) => {
+  if (led.images && Array.isArray(led.images)) {
+    led.images = led.images.map(imageUrl => {
+      // Eğer base64 ise, olduğu gibi bırak
+      if (imageUrl.startsWith('data:')) {
+        return imageUrl;
+      }
+      // Eğer relative path ise, tam URL'ye çevir
+      if (imageUrl.startsWith('/uploads/')) {
+        return `https://ugur-elektronik-production-803b.up.railway.app${imageUrl}`;
+      }
+      // Eğer zaten tam URL ise, olduğu gibi bırak
+      return imageUrl;
+    });
+  }
+  return led;
+};
+
 // Tüm ledleri getir
 router.get('/', async (req, res) => {
   try {
     const leds = await Led.find().sort({ createdAt: -1 });
-    res.json(leds);
+    // Her LED için görsel URL'lerini düzelt
+    const fixedLeds = leds.map(fixImageUrls);
+    res.json(fixedLeds);
   } catch (err) {
     res.status(500).json({ message: 'Sunucu hatası', error: err.message });
   }
@@ -19,7 +40,9 @@ router.get('/:id', async (req, res) => {
     if (!led) {
       return res.status(404).json({ message: 'LED bulunamadı' });
     }
-    res.json(led);
+    // Görsel URL'lerini düzelt
+    const fixedLed = fixImageUrls(led);
+    res.json(fixedLed);
   } catch (err) {
     res.status(500).json({ message: 'Sunucu hatası', error: err.message });
   }
