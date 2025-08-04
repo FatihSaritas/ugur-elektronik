@@ -21,7 +21,9 @@ app.use(cors({
   origin: [
     'http://localhost:3000', 
     'http://127.0.0.1:3000',
-    'https://your-vercel-app.vercel.app',
+    'https://ugur-elektronik-d2g3h5egq-fatihsaritas-projects.vercel.app',
+    'https://ugur-elektronik-k9nopurvt-fatihsaritas-projects.vercel.app',
+    'https://ugur-elektronik-lv12zvd97-fatihsaritas-projects.vercel.app',
     process.env.FRONTEND_URL
   ].filter(Boolean),
   credentials: true,
