@@ -12,14 +12,27 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Tekil televizyon getir (ID ile)
+router.get('/:id', async (req, res) => {
+  try {
+    const television = await Television.findById(req.params.id);
+    if (!television) {
+      return res.status(404).json({ message: 'Televizyon bulunamadı' });
+    }
+    res.json(television);
+  } catch (err) {
+    res.status(500).json({ message: 'Sunucu hatası', error: err.message });
+  }
+});
+
 // Yeni televizyon ekle
 router.post('/', async (req, res) => {
-  const { name, brand, price, features, image } = req.body;
+  const { name, brand, price, features, images } = req.body;
   if (!name || !brand || !price) {
     return res.status(400).json({ message: 'İsim, marka ve fiyat zorunludur.' });
   }
   try {
-    const tv = new Television({ name, brand, price, features, image });
+    const tv = new Television({ name, brand, price, features, images });
     await tv.save();
     res.status(201).json(tv);
   } catch (err) {

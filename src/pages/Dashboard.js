@@ -3,9 +3,11 @@ import Sidebar from '../components/DashboardComponents/Sidebar';
 import TelevisionPanel from '../components/DashboardComponents/TelevisionPanel';
 import LedPanel from '../components/DashboardComponents/LedPanel';
 import ChargerPanel from '../components/DashboardComponents/ChargerPanel';
+import BrandPanel from '../components/DashboardComponents/BrandPanel';
 import TvIcon from '@mui/icons-material/Tv';
 import FlashOnIcon from '@mui/icons-material/FlashOn';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import StorefrontIcon from '@mui/icons-material/Storefront';
 import { Box, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -14,6 +16,7 @@ const categories = [
   { name: 'Televizyon', icon: <TvIcon /> },
   { name: 'LED', icon: <FlashOnIcon /> },
   { name: 'Araç Şarj', icon: <DirectionsCarIcon /> },
+  { name: 'Markalar', icon: <StorefrontIcon /> },
 ];
 
 const Dashboard = () => {
@@ -22,7 +25,7 @@ const Dashboard = () => {
 
   // Televizyon state
   const [tvList, setTvList] = useState([]);
-  const [tvForm, setTvForm] = useState({ name: '', brand: '', price: '', features: '', image: '' });
+  const [tvForm, setTvForm] = useState({ name: '', brand: '', price: '', features: '', images: [] });
   const [tvError, setTvError] = useState('');
   const [tvSuccess, setTvSuccess] = useState('');
   const [tvLoading, setTvLoading] = useState(false);
@@ -30,7 +33,7 @@ const Dashboard = () => {
 
   // Led state
   const [ledList, setLedList] = useState([]);
-  const [ledForm, setLedForm] = useState({ name: '', brand: '', price: '', features: '', image: '' });
+  const [ledForm, setLedForm] = useState({ name: '', brand: '', price: '', features: '', images: [] });
   const [ledError, setLedError] = useState('');
   const [ledSuccess, setLedSuccess] = useState('');
   const [ledLoading, setLedLoading] = useState(false);
@@ -38,7 +41,7 @@ const Dashboard = () => {
 
   // Charger state
   const [chargerList, setChargerList] = useState([]);
-  const [chargerForm, setChargerForm] = useState({ name: '', brand: '', price: '', features: '', image: '' });
+  const [chargerForm, setChargerForm] = useState({ name: '', brand: '', price: '', features: '', images: [] });
   const [chargerError, setChargerError] = useState('');
   const [chargerSuccess, setChargerSuccess] = useState('');
   const [chargerLoading, setChargerLoading] = useState(false);
@@ -46,18 +49,31 @@ const Dashboard = () => {
 
   // Televizyon için düzenleme state
   const [editingTvId, setEditingTvId] = useState(null);
-  const [editTvForm, setEditTvForm] = useState({ name: '', brand: '', price: '', features: '', image: '' });
+  const [editTvForm, setEditTvForm] = useState({ name: '', brand: '', price: '', features: '', images: [] });
   const [editTvLoading, setEditTvLoading] = useState(false);
 
   // Led için düzenleme state
   const [editingLedId, setEditingLedId] = useState(null);
-  const [editLedForm, setEditLedForm] = useState({ name: '', brand: '', price: '', features: '', image: '' });
+  const [editLedForm, setEditLedForm] = useState({ name: '', brand: '', price: '', features: '', images: [] });
   const [editLedLoading, setEditLedLoading] = useState(false);
 
   // Charger için düzenleme state
   const [editingChargerId, setEditingChargerId] = useState(null);
-  const [editChargerForm, setEditChargerForm] = useState({ name: '', brand: '', price: '', features: '', image: '' });
+  const [editChargerForm, setEditChargerForm] = useState({ name: '', brand: '', price: '', features: '', images: [] });
   const [editChargerLoading, setEditChargerLoading] = useState(false);
+
+  // Brand state
+  const [brandList, setBrandList] = useState([]);
+  const [brandForm, setBrandForm] = useState({ name: '', image: '' });
+  const [brandError, setBrandError] = useState('');
+  const [brandSuccess, setBrandSuccess] = useState('');
+  const [brandLoading, setBrandLoading] = useState(false);
+  const [brandImageUploading, setBrandImageUploading] = useState(false);
+
+  // Brand için düzenleme state
+  const [editingBrandId, setEditingBrandId] = useState(null);
+  const [editBrandForm, setEditBrandForm] = useState({ name: '', image: '', isActive: true });
+  const [editBrandLoading, setEditBrandLoading] = useState(false);
 
   useEffect(() => {
     if (selectedCategory === 'Televizyon') {
@@ -66,6 +82,8 @@ const Dashboard = () => {
       fetchLeds();
     } else if (selectedCategory === 'Araç Şarj') {
       fetchChargers();
+    } else if (selectedCategory === 'Markalar') {
+      fetchBrands();
     }
     // eslint-disable-next-line
   }, [selectedCategory]);
@@ -94,15 +112,15 @@ const Dashboard = () => {
       return;
     }
     try {
-      const res = await axios.post('/api/television', {
+      await axios.post('/api/television', {
         name: tvForm.name,
         brand: tvForm.brand,
         price: Number(tvForm.price),
         features: tvForm.features,
-        image: tvForm.image
+        images: tvForm.images
       });
       setTvSuccess('Televizyon başarıyla eklendi!');
-      setTvForm({ name: '', brand: '', price: '', features: '', image: '' });
+      setTvForm({ name: '', brand: '', price: '', features: '', images: [] });
       fetchTelevisions();
     } catch (err) {
       setTvError('Ekleme başarısız.');
@@ -111,24 +129,36 @@ const Dashboard = () => {
     }
   };
 
-  // Fotoğraf seçilince backend'e yükle
+  // Çoklu fotoğraf seçilince backend'e yükle
   const handleImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
     setImageUploading(true);
     setTvError('');
     try {
-      const formData = new FormData();
-      formData.append('image', file);
-      const res = await axios.post('/api/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      setTvForm((prev) => ({ ...prev, image: res.data.url }));
+      const uploadedImages = [];
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('image', file);
+        const res = await axios.post('/api/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        uploadedImages.push(res.data.url);
+      }
+      setTvForm((prev) => ({ ...prev, images: [...prev.images, ...uploadedImages] }));
     } catch (err) {
-      setTvError('Fotoğraf yüklenemedi.');
+      setTvError('Fotoğraflar yüklenemedi.');
     } finally {
       setImageUploading(false);
     }
+  };
+
+  // Fotoğraf silme fonksiyonu
+  const handleRemoveImage = (index) => {
+    setTvForm((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
   };
 
   const fetchLeds = async () => {
@@ -155,15 +185,15 @@ const Dashboard = () => {
       return;
     }
     try {
-      const res = await axios.post('/api/led', {
+      await axios.post('/api/led', {
         name: ledForm.name,
         brand: ledForm.brand,
         price: Number(ledForm.price),
         features: ledForm.features,
-        image: ledForm.image
+        images: ledForm.images
       });
       setLedSuccess('Led başarıyla eklendi!');
-      setLedForm({ name: '', brand: '', price: '', features: '', image: '' });
+      setLedForm({ name: '', brand: '', price: '', features: '', images: [] });
       fetchLeds();
     } catch (err) {
       setLedError('Ekleme başarısız.');
@@ -172,24 +202,36 @@ const Dashboard = () => {
     }
   };
 
-  // Led fotoğrafı seçilince backend'e yükle
+  // Led çoklu fotoğrafı seçilince backend'e yükle
   const handleLedImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
     setLedImageUploading(true);
     setLedError('');
     try {
-      const formData = new FormData();
-      formData.append('image', file);
-      const res = await axios.post('/api/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      setLedForm((prev) => ({ ...prev, image: res.data.url }));
+      const uploadedImages = [];
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('image', file);
+        const res = await axios.post('/api/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        uploadedImages.push(res.data.url);
+      }
+      setLedForm((prev) => ({ ...prev, images: [...prev.images, ...uploadedImages] }));
     } catch (err) {
-      setLedError('Fotoğraf yüklenemedi.');
+      setLedError('Fotoğraflar yüklenemedi.');
     } finally {
       setLedImageUploading(false);
     }
+  };
+
+  // Led fotoğraf silme fonksiyonu
+  const handleLedRemoveImage = (index) => {
+    setLedForm((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
   };
 
   const fetchChargers = async () => {
@@ -216,15 +258,15 @@ const Dashboard = () => {
       return;
     }
     try {
-      const res = await axios.post('/api/charger', {
+      await axios.post('/api/charger', {
         name: chargerForm.name,
         brand: chargerForm.brand,
         price: Number(chargerForm.price),
         features: chargerForm.features,
-        image: chargerForm.image
+        images: chargerForm.images
       });
       setChargerSuccess('Şarj cihazı başarıyla eklendi!');
-      setChargerForm({ name: '', brand: '', price: '', features: '', image: '' });
+      setChargerForm({ name: '', brand: '', price: '', features: '', images: [] });
       fetchChargers();
     } catch (err) {
       setChargerError('Ekleme başarısız.');
@@ -233,24 +275,36 @@ const Dashboard = () => {
     }
   };
 
-  // Charger fotoğrafı seçilince backend'e yükle
+  // Charger çoklu fotoğrafı seçilince backend'e yükle
   const handleChargerImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
     setChargerImageUploading(true);
     setChargerError('');
     try {
-      const formData = new FormData();
-      formData.append('image', file);
-      const res = await axios.post('/api/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      setChargerForm((prev) => ({ ...prev, image: res.data.url }));
+      const uploadedImages = [];
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('image', file);
+        const res = await axios.post('/api/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        uploadedImages.push(res.data.url);
+      }
+      setChargerForm((prev) => ({ ...prev, images: [...prev.images, ...uploadedImages] }));
     } catch (err) {
-      setChargerError('Fotoğraf yüklenemedi.');
+      setChargerError('Fotoğraflar yüklenemedi.');
     } finally {
       setChargerImageUploading(false);
     }
+  };
+
+  // Charger fotoğraf silme fonksiyonu
+  const handleChargerRemoveImage = (index) => {
+    setChargerForm((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
   };
 
   // Televizyon Sil
@@ -286,25 +340,41 @@ const Dashboard = () => {
   // Televizyon Düzenle
   const handleEditTv = (tv) => {
     setEditingTvId(tv._id);
-    setEditTvForm({ name: tv.name, brand: tv.brand, price: tv.price, features: tv.features, image: tv.image });
+    setEditTvForm({ 
+      name: tv.name, 
+      brand: tv.brand, 
+      price: tv.price, 
+      features: tv.features, 
+      images: tv.images || [] 
+    });
   };
   const handleEditTvFormChange = (e) => {
     setEditTvForm({ ...editTvForm, [e.target.name]: e.target.value });
   };
   const handleEditTvImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
     setEditTvLoading(true);
     try {
-      const formData = new FormData();
-      formData.append('image', file);
-      const res = await axios.post('/api/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      setEditTvForm((prev) => ({ ...prev, image: res.data.url }));
+      const uploadedImages = [];
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('image', file);
+        const res = await axios.post('/api/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        uploadedImages.push(res.data.url);
+      }
+      setEditTvForm((prev) => ({ ...prev, images: [...prev.images, ...uploadedImages] }));
     } finally {
       setEditTvLoading(false);
     }
+  };
+  const handleEditTvRemoveImage = (index) => {
+    setEditTvForm((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
   };
   const handleEditTvSave = async () => {
     setEditTvLoading(true);
@@ -325,25 +395,41 @@ const Dashboard = () => {
   // Led Düzenle
   const handleEditLed = (led) => {
     setEditingLedId(led._id);
-    setEditLedForm({ name: led.name, brand: led.brand, price: led.price, features: led.features, image: led.image });
+    setEditLedForm({ 
+      name: led.name, 
+      brand: led.brand, 
+      price: led.price, 
+      features: led.features, 
+      images: led.images || [] 
+    });
   };
   const handleEditLedFormChange = (e) => {
     setEditLedForm({ ...editLedForm, [e.target.name]: e.target.value });
   };
   const handleEditLedImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
     setEditLedLoading(true);
     try {
-      const formData = new FormData();
-      formData.append('image', file);
-      const res = await axios.post('/api/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      setEditLedForm((prev) => ({ ...prev, image: res.data.url }));
+      const uploadedImages = [];
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('image', file);
+        const res = await axios.post('/api/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        uploadedImages.push(res.data.url);
+      }
+      setEditLedForm((prev) => ({ ...prev, images: [...prev.images, ...uploadedImages] }));
     } finally {
       setEditLedLoading(false);
     }
+  };
+  const handleEditLedRemoveImage = (index) => {
+    setEditLedForm((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
   };
   const handleEditLedSave = async () => {
     setEditLedLoading(true);
@@ -364,25 +450,41 @@ const Dashboard = () => {
   // Charger Düzenle
   const handleEditCharger = (charger) => {
     setEditingChargerId(charger._id);
-    setEditChargerForm({ name: charger.name, brand: charger.brand, price: charger.price, features: charger.features, image: charger.image });
+    setEditChargerForm({ 
+      name: charger.name, 
+      brand: charger.brand, 
+      price: charger.price, 
+      features: charger.features, 
+      images: charger.images || [] 
+    });
   };
   const handleEditChargerFormChange = (e) => {
     setEditChargerForm({ ...editChargerForm, [e.target.name]: e.target.value });
   };
   const handleEditChargerImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
     setEditChargerLoading(true);
     try {
-      const formData = new FormData();
-      formData.append('image', file);
-      const res = await axios.post('/api/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      setEditChargerForm((prev) => ({ ...prev, image: res.data.url }));
+      const uploadedImages = [];
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('image', file);
+        const res = await axios.post('/api/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        uploadedImages.push(res.data.url);
+      }
+      setEditChargerForm((prev) => ({ ...prev, images: [...prev.images, ...uploadedImages] }));
     } finally {
       setEditChargerLoading(false);
     }
+  };
+  const handleEditChargerRemoveImage = (index) => {
+    setEditChargerForm((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
   };
   const handleEditChargerSave = async () => {
     setEditChargerLoading(true);
@@ -398,6 +500,131 @@ const Dashboard = () => {
   };
   const handleEditChargerCancel = () => {
     setEditingChargerId(null);
+  };
+
+  // Brand functions
+  const fetchBrands = async () => {
+    try {
+      const res = await axios.get('/api/brand/admin');
+      setBrandList(res.data);
+    } catch (err) {
+      setBrandError('Markalar yüklenemedi.');
+    }
+  };
+
+  const handleBrandFormChange = (e) => {
+    setBrandForm({ ...brandForm, [e.target.name]: e.target.value });
+  };
+
+  const handleBrandSubmit = async (e) => {
+    e.preventDefault();
+    setBrandError('');
+    setBrandSuccess('');
+    setBrandLoading(true);
+    if (!brandForm.name) {
+      setBrandError('Marka adı zorunludur.');
+      setBrandLoading(false);
+      return;
+    }
+    if (!brandForm.image) {
+      setBrandError('Lütfen bir resim yükleyin.');
+      setBrandLoading(false);
+      return;
+    }
+    try {
+      await axios.post('/api/brand', {
+        name: brandForm.name,
+        image: brandForm.image
+      });
+      setBrandSuccess('Marka başarıyla eklendi!');
+      setBrandForm({ name: '', image: '' });
+      fetchBrands();
+    } catch (err) {
+      setBrandError(err.response?.data?.message || 'Ekleme başarısız.');
+    } finally {
+      setBrandLoading(false);
+    }
+  };
+
+  const handleBrandImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setBrandImageUploading(true);
+    setBrandError('');
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      const res = await axios.post('/api/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setBrandForm((prev) => ({ ...prev, image: res.data.url }));
+    } catch (err) {
+      setBrandError('Fotoğraf yüklenemedi.');
+    } finally {
+      setBrandImageUploading(false);
+    }
+  };
+
+  const handleDeleteBrand = async (id) => {
+    try {
+      await axios.delete(`/api/brand/${id}`);
+      setBrandList((prev) => prev.filter((brand) => brand._id !== id));
+    } catch (err) {
+      setBrandError('Silme başarısız.');
+    }
+  };
+
+  const handleEditBrand = (brand) => {
+    setEditingBrandId(brand._id);
+    setEditBrandForm({ name: brand.name, image: brand.image, isActive: brand.isActive });
+  };
+
+  const handleEditBrandFormChange = (e) => {
+    setEditBrandForm({ ...editBrandForm, [e.target.name]: e.target.value });
+  };
+
+  const handleEditBrandImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setEditBrandLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      const res = await axios.post('/api/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setEditBrandForm((prev) => ({ ...prev, image: res.data.url }));
+    } catch (err) {
+      setBrandError('Fotoğraf yüklenemedi.');
+    } finally {
+      setEditBrandLoading(false);
+    }
+  };
+
+  const handleEditBrandSave = async () => {
+    setEditBrandLoading(true);
+    try {
+      const res = await axios.put(`/api/brand/${editingBrandId}`, editBrandForm);
+      setBrandList((prev) => prev.map((brand) => brand._id === editingBrandId ? res.data : brand));
+      setEditingBrandId(null);
+    } catch (err) {
+      setBrandError('Güncelleme başarısız.');
+    } finally {
+      setEditBrandLoading(false);
+    }
+  };
+
+  const handleEditBrandCancel = () => {
+    setEditingBrandId(null);
+  };
+
+  const handleToggleBrandStatus = async (id, isActive) => {
+    try {
+      const res = await axios.put(`/api/brand/${id}`, { isActive });
+      setBrandList((prev) => prev.map((brand) => brand._id === id ? res.data : brand));
+    } catch (err) {
+      setBrandError('Durum güncellenemedi.');
+    }
   };
 
   return (
@@ -429,6 +656,8 @@ const Dashboard = () => {
             onEditTvSave={handleEditTvSave}
             onEditTvCancel={handleEditTvCancel}
             onDeleteTv={handleDeleteTv}
+            onRemoveImage={handleRemoveImage}
+            onEditRemoveImage={handleEditTvRemoveImage}
           />
         )}
         {selectedCategory === 'LED' && (
@@ -451,6 +680,8 @@ const Dashboard = () => {
             onEditLedSave={handleEditLedSave}
             onEditLedCancel={handleEditLedCancel}
             onDeleteLed={handleDeleteLed}
+            onRemoveImage={handleLedRemoveImage}
+            onEditRemoveImage={handleEditLedRemoveImage}
           />
         )}
         {selectedCategory === 'Araç Şarj' && (
@@ -473,9 +704,34 @@ const Dashboard = () => {
             onEditChargerSave={handleEditChargerSave}
             onEditChargerCancel={handleEditChargerCancel}
             onDeleteCharger={handleDeleteCharger}
+            onRemoveImage={handleChargerRemoveImage}
+            onEditRemoveImage={handleEditChargerRemoveImage}
           />
         )}
-        {selectedCategory !== 'Televizyon' && selectedCategory !== 'LED' && selectedCategory !== 'Araç Şarj' && (
+        {selectedCategory === 'Markalar' && (
+          <BrandPanel
+            brandList={brandList}
+            brandForm={brandForm}
+            brandError={brandError}
+            brandSuccess={brandSuccess}
+            brandLoading={brandLoading}
+            brandImageUploading={brandImageUploading}
+            editingBrandId={editingBrandId}
+            editBrandForm={editBrandForm}
+            editBrandLoading={editBrandLoading}
+            onBrandFormChange={handleBrandFormChange}
+            onBrandSubmit={handleBrandSubmit}
+            onBrandImageChange={handleBrandImageChange}
+            onEditBrand={handleEditBrand}
+            onEditBrandFormChange={handleEditBrandFormChange}
+            onEditBrandImageChange={handleEditBrandImageChange}
+            onEditBrandSave={handleEditBrandSave}
+            onEditBrandCancel={handleEditBrandCancel}
+            onDeleteBrand={handleDeleteBrand}
+            onToggleBrandStatus={handleToggleBrandStatus}
+          />
+        )}
+        {selectedCategory !== 'Televizyon' && selectedCategory !== 'LED' && selectedCategory !== 'Araç Şarj' && selectedCategory !== 'Markalar' && (
           <Paper elevation={6} sx={{ p: 5, borderRadius: 3, minWidth: 320, textAlign: 'center' }}>
             <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>
               Bir kategori seçin

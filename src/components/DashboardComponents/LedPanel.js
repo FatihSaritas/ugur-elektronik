@@ -1,15 +1,17 @@
 import React from 'react';
-import { Box, Typography, Paper, TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, InputAdornment } from '@mui/material';
+import { Box, Typography, Paper, TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, InputAdornment, Chip, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CurrencyLiraIcon from '@mui/icons-material/CurrencyLira';
+import CloseIcon from '@mui/icons-material/Close';
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 
 const LedPanel = ({
   ledList, ledForm, ledError, ledSuccess, ledLoading, ledImageUploading,
   editingLedId, editLedForm, editLedLoading,
   onLedFormChange, onLedSubmit, onLedImageChange,
   onEditLed, onEditLedFormChange, onEditLedImageChange, onEditLedSave, onEditLedCancel,
-  onDeleteLed
+  onDeleteLed, onRemoveImage, onEditRemoveImage
 }) => (
   <Box sx={{ width: '100%', maxWidth: 700 }}>
     <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>
@@ -65,18 +67,47 @@ const LedPanel = ({
             component="label"
             disabled={ledImageUploading}
             sx={{ height: 56 }}
+            startIcon={<AddPhotoAlternateIcon />}
           >
-            {ledImageUploading ? 'Yükleniyor...' : 'Fotoğraf Seç'}
+            {ledImageUploading ? 'Yükleniyor...' : 'Fotoğraflar Seç'}
             <input
               type="file"
               accept="image/*"
+              multiple
               hidden
               onChange={onLedImageChange}
             />
           </Button>
-          {ledForm.image && (
-            <Box sx={{ mt: 1 }}>
-              <img src={ledForm.image} alt="Ürün" style={{ width: 80, borderRadius: 4 }} />
+          {ledForm.images && ledForm.images.length > 0 && (
+            <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {ledForm.images.map((image, index) => (
+                <Box key={index} sx={{ position: 'relative' }}>
+                  <img 
+                    src={image} 
+                    alt={`Ürün ${index + 1}`} 
+                    style={{ 
+                      width: 80, 
+                      height: 80, 
+                      borderRadius: 4, 
+                      objectFit: 'cover' 
+                    }} 
+                  />
+                  <IconButton
+                    size="small"
+                    sx={{
+                      position: 'absolute',
+                      top: -8,
+                      right: -8,
+                      backgroundColor: 'error.main',
+                      color: 'white',
+                      '&:hover': { backgroundColor: 'error.dark' }
+                    }}
+                    onClick={() => onRemoveImage(index)}
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              ))}
             </Box>
           )}
         </Box>
@@ -97,7 +128,7 @@ const LedPanel = ({
             <TableCell>Marka</TableCell>
             <TableCell>Özellikler</TableCell>
             <TableCell>Fiyat</TableCell>
-            <TableCell>Resim</TableCell>
+            <TableCell>Resimler</TableCell>
             <TableCell>İşlem</TableCell>
           </TableRow>
         </TableHead>
@@ -119,10 +150,43 @@ const LedPanel = ({
                   </TableCell>
                   <TableCell>
                     <Button variant="outlined" component="label" size="small" disabled={editLedLoading}>
-                      Fotoğraf Seç
-                      <input type="file" accept="image/*" hidden onChange={onEditLedImageChange} />
+                      Fotoğraflar Seç
+                      <input type="file" accept="image/*" multiple hidden onChange={onEditLedImageChange} />
                     </Button>
-                    {editLedForm.image && <img src={editLedForm.image} alt="Ürün" style={{ width: 40, borderRadius: 4, marginLeft: 8 }} />}
+                    {editLedForm.images && editLedForm.images.length > 0 && (
+                      <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {editLedForm.images.map((image, index) => (
+                          <Box key={index} sx={{ position: 'relative' }}>
+                            <img 
+                              src={image} 
+                              alt={`Ürün ${index + 1}`} 
+                              style={{ 
+                                width: 40, 
+                                height: 40, 
+                                borderRadius: 4, 
+                                objectFit: 'cover' 
+                              }} 
+                            />
+                            <IconButton
+                              size="small"
+                              sx={{
+                                position: 'absolute',
+                                top: -4,
+                                right: -4,
+                                backgroundColor: 'error.main',
+                                color: 'white',
+                                width: 16,
+                                height: 16,
+                                '&:hover': { backgroundColor: 'error.dark' }
+                              }}
+                              onClick={() => onEditRemoveImage(index)}
+                            >
+                              <CloseIcon sx={{ fontSize: 12 }} />
+                            </IconButton>
+                          </Box>
+                        ))}
+                      </Box>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Button color="success" onClick={onEditLedSave} disabled={editLedLoading}>Kaydet</Button>
@@ -142,7 +206,35 @@ const LedPanel = ({
                       {led.price} <CurrencyLiraIcon fontSize="small" />
                     </Typography>
                   </TableCell>
-                  <TableCell>{led.image && <img src={led.image} alt={led.name} style={{ width: 60, borderRadius: 4 }} />}</TableCell>
+                  <TableCell>
+                    {led.images && led.images.length > 0 ? (
+                      <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                        {led.images.slice(0, 3).map((image, index) => (
+                          <img 
+                            key={index} 
+                            src={image} 
+                            alt={`${led.name} ${index + 1}`} 
+                            style={{ 
+                              width: 40, 
+                              height: 40, 
+                              borderRadius: 4, 
+                              objectFit: 'cover' 
+                            }} 
+                          />
+                        ))}
+                        {led.images.length > 3 && (
+                          <Chip 
+                            label={`+${led.images.length - 3}`} 
+                            size="small" 
+                            color="primary" 
+                            variant="outlined"
+                          />
+                        )}
+                      </Box>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">Resim yok</Typography>
+                    )}
+                  </TableCell>
                   <TableCell>
                     <Button color="primary" onClick={() => onEditLed(led)}><EditIcon /></Button>
                     <Button color="error" onClick={() => onDeleteLed(led._id)}><DeleteIcon /></Button>

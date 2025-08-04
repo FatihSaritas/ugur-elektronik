@@ -1,15 +1,17 @@
 import React from 'react';
-import { Box, Typography, Paper, TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, InputAdornment } from '@mui/material';
+import { Box, Typography, Paper, TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, InputAdornment, Chip, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CurrencyLiraIcon from '@mui/icons-material/CurrencyLira';
+import CloseIcon from '@mui/icons-material/Close';
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 
 const TelevisionPanel = ({
   tvList, tvForm, tvError, tvSuccess, tvLoading, imageUploading,
   editingTvId, editTvForm, editTvLoading,
   onTvFormChange, onTvSubmit, onImageChange,
   onEditTv, onEditTvFormChange, onEditTvImageChange, onEditTvSave, onEditTvCancel,
-  onDeleteTv
+  onDeleteTv, onRemoveImage, onEditRemoveImage
 }) => (
   <Box sx={{ width: '100%', maxWidth: 700 }}>
     <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>
@@ -65,18 +67,47 @@ const TelevisionPanel = ({
             component="label"
             disabled={imageUploading}
             sx={{ height: 56 }}
+            startIcon={<AddPhotoAlternateIcon />}
           >
-            {imageUploading ? 'Yükleniyor...' : 'Fotoğraf Seç'}
+            {imageUploading ? 'Yükleniyor...' : 'Fotoğraflar Seç'}
             <input
               type="file"
               accept="image/*"
+              multiple
               hidden
               onChange={onImageChange}
             />
           </Button>
-          {tvForm.image && (
-            <Box sx={{ mt: 1 }}>
-              <img src={tvForm.image} alt="Ürün" style={{ width: 80, borderRadius: 4 }} />
+          {tvForm.images && tvForm.images.length > 0 && (
+            <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {tvForm.images.map((image, index) => (
+                <Box key={index} sx={{ position: 'relative' }}>
+                  <img 
+                    src={image} 
+                    alt={`Ürün ${index + 1}`} 
+                    style={{ 
+                      width: 80, 
+                      height: 80, 
+                      borderRadius: 4, 
+                      objectFit: 'cover' 
+                    }} 
+                  />
+                  <IconButton
+                    size="small"
+                    sx={{
+                      position: 'absolute',
+                      top: -8,
+                      right: -8,
+                      backgroundColor: 'error.main',
+                      color: 'white',
+                      '&:hover': { backgroundColor: 'error.dark' }
+                    }}
+                    onClick={() => onRemoveImage(index)}
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              ))}
             </Box>
           )}
         </Box>
@@ -97,7 +128,7 @@ const TelevisionPanel = ({
             <TableCell>Marka</TableCell>
             <TableCell>Özellikler</TableCell>
             <TableCell>Fiyat</TableCell>
-            <TableCell>Resim</TableCell>
+            <TableCell>Resimler</TableCell>
             <TableCell>İşlem</TableCell>
           </TableRow>
         </TableHead>
@@ -119,10 +150,43 @@ const TelevisionPanel = ({
                   </TableCell>
                   <TableCell>
                     <Button variant="outlined" component="label" size="small" disabled={editTvLoading}>
-                      Fotoğraf Seç
-                      <input type="file" accept="image/*" hidden onChange={onEditTvImageChange} />
+                      Fotoğraflar Seç
+                      <input type="file" accept="image/*" multiple hidden onChange={onEditTvImageChange} />
                     </Button>
-                    {editTvForm.image && <img src={editTvForm.image} alt="Ürün" style={{ width: 40, borderRadius: 4, marginLeft: 8 }} />}
+                    {editTvForm.images && editTvForm.images.length > 0 && (
+                      <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {editTvForm.images.map((image, index) => (
+                          <Box key={index} sx={{ position: 'relative' }}>
+                            <img 
+                              src={image} 
+                              alt={`Ürün ${index + 1}`} 
+                              style={{ 
+                                width: 40, 
+                                height: 40, 
+                                borderRadius: 4, 
+                                objectFit: 'cover' 
+                              }} 
+                            />
+                            <IconButton
+                              size="small"
+                              sx={{
+                                position: 'absolute',
+                                top: -4,
+                                right: -4,
+                                backgroundColor: 'error.main',
+                                color: 'white',
+                                width: 16,
+                                height: 16,
+                                '&:hover': { backgroundColor: 'error.dark' }
+                              }}
+                              onClick={() => onEditRemoveImage(index)}
+                            >
+                              <CloseIcon sx={{ fontSize: 12 }} />
+                            </IconButton>
+                          </Box>
+                        ))}
+                      </Box>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Button color="success" onClick={onEditTvSave} disabled={editTvLoading}>Kaydet</Button>
@@ -142,7 +206,35 @@ const TelevisionPanel = ({
                       {tv.price} <CurrencyLiraIcon fontSize="small" />
                     </Typography>
                   </TableCell>
-                  <TableCell>{tv.image && <img src={tv.image} alt={tv.name} style={{ width: 60, borderRadius: 4 }} />}</TableCell>
+                  <TableCell>
+                    {tv.images && tv.images.length > 0 ? (
+                      <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                        {tv.images.slice(0, 3).map((image, index) => (
+                          <img 
+                            key={index} 
+                            src={image} 
+                            alt={`${tv.name} ${index + 1}`} 
+                            style={{ 
+                              width: 40, 
+                              height: 40, 
+                              borderRadius: 4, 
+                              objectFit: 'cover' 
+                            }} 
+                          />
+                        ))}
+                        {tv.images.length > 3 && (
+                          <Chip 
+                            label={`+${tv.images.length - 3}`} 
+                            size="small" 
+                            color="primary" 
+                            variant="outlined"
+                          />
+                        )}
+                      </Box>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">Resim yok</Typography>
+                    )}
+                  </TableCell>
                   <TableCell>
                     <Button color="primary" onClick={() => onEditTv(tv)}><EditIcon /></Button>
                     <Button color="error" onClick={() => onDeleteTv(tv._id)}><DeleteIcon /></Button>

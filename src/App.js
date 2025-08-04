@@ -6,6 +6,7 @@ import Shopping from './pages/Shopping';
 import Contact from './pages/Contact';
 import Dashboard from './pages/Dashboard';
 import AdminPanel from './pages/AdminPanel';
+import ProductDetails from './pages/ProductDetails';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 
@@ -20,6 +21,7 @@ function App() {
           <Route path="/iletisim" element={<Contact />} />
           <Route path="/Shopping" element={<Shopping />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/product/:category/:id" element={<ProductDetails />} />
         </Routes>
       </Router>
     </div>

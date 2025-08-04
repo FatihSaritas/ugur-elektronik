@@ -12,14 +12,27 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Tekil LED getir (ID ile)
+router.get('/:id', async (req, res) => {
+  try {
+    const led = await Led.findById(req.params.id);
+    if (!led) {
+      return res.status(404).json({ message: 'LED bulunamadı' });
+    }
+    res.json(led);
+  } catch (err) {
+    res.status(500).json({ message: 'Sunucu hatası', error: err.message });
+  }
+});
+
 // Yeni led ekle
 router.post('/', async (req, res) => {
-  const { name, brand, price, features, image } = req.body;
+  const { name, brand, price, features, images } = req.body;
   if (!name || !brand || !price) {
     return res.status(400).json({ message: 'İsim, marka ve fiyat zorunludur.' });
   }
   try {
-    const led = new Led({ name, brand, price, features, image });
+    const led = new Led({ name, brand, price, features, images });
     await led.save();
     res.status(201).json(led);
   } catch (err) {

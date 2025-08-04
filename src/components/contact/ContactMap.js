@@ -1,7 +1,95 @@
-import React from 'react'
+import React, { useState } from 'react'
+import axios from 'axios'
 import '../../assets/css/contact-css/ContactMap.css'
 
 function ContactMap() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({ type: '', text: '' });
+  const [errors, setErrors] = useState({});
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Hata mesajını temizle
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.name.trim()) {
+      newErrors.name = 'Adınız gereklidir';
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email adresiniz gereklidir';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Geçerli bir email adresi giriniz';
+    }
+    
+    if (!formData.subject.trim()) {
+      newErrors.subject = 'Konu gereklidir';
+    }
+    
+    if (!formData.message.trim()) {
+      newErrors.message = 'Mesaj gereklidir';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
+    setLoading(true);
+    setMessage({ type: '', text: '' });
+    
+    try {
+      const response = await axios.post('http://localhost:5050/api/contact/send', formData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        withCredentials: false
+      });
+      
+      if (response.data.success) {
+        setMessage({ type: 'success', text: response.data.message });
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      }
+    } catch (error) {
+      console.error('Form gönderim hatası:', error);
+      
+      if (error.response?.data?.message) {
+        setMessage({ type: 'error', text: error.response.data.message });
+        console.log('Backend hata detayları:', error.response.data);
+      } else {
+        setMessage({ type: 'error', text: 'Bir hata oluştu. Lütfen tekrar deneyin.' });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <section className="contact">
       <div className="contact-top">
@@ -27,36 +115,84 @@ function ContactMap() {
             </p>
           </div>
           <div className="contact-elements">
-            <form className="contact-form">
+            <form className="contact-form" onSubmit={handleSubmit}>
+              {/* Mesaj gösterimi */}
+              {message.text && (
+                <div className={`message ${message.type}`}>
+                  {message.text}
+                </div>
+              )}
+              
               <div>
                 <label>
                   Adınız
                   <span>*</span>
                 </label>
-                <input type="text" required />
+                <input 
+                  type="text" 
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className={errors.name ? 'error' : ''}
+                  required 
+                />
+                {errors.name && <span className="error-text">{errors.name}</span>}
               </div>
+              
               <div>
                 <label>
                   Mail Adresiniz
                   <span>*</span>
                 </label>
-                <input type="text" required />
+                <input 
+                  type="email" 
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className={errors.email ? 'error' : ''}
+                  required 
+                />
+                {errors.email && <span className="error-text">{errors.email}</span>}
               </div>
+              
               <div>
                 <label>
                   Konu
                   <span>*</span>
                 </label>
-                <input type="text" required />
+                <input 
+                  type="text" 
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleInputChange}
+                  className={errors.subject ? 'error' : ''}
+                  required 
+                />
+                {errors.subject && <span className="error-text">{errors.subject}</span>}
               </div>
+              
               <div>
                 <label>
                   Mesaj
                   <span>*</span>
                 </label>
-                <textarea id="author" name="author" required></textarea>
+                <textarea 
+                  name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  className={errors.message ? 'error' : ''}
+                  required
+                ></textarea>
+                {errors.message && <span className="error-text">{errors.message}</span>}
               </div>
-              <button className="btn btn-sm form-button" type="submit">Mesaj Gönder</button>
+              
+              <button 
+                className="btn btn-sm form-button" 
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? 'Gönderiliyor...' : 'Mesaj Gönder'}
+              </button>
             </form>
             <div className="contact-info">
               <div className="contact-info-item">
@@ -64,7 +200,7 @@ function ContactMap() {
                   <strong> Mağaza</strong>
                   <p className="contact-street">
                     İstanbul / Pendik Fevzi Çakmak Mah. Marmara Cd. Maden Sok. No:1 </p>
-                  <a href="tel:5301627748">Telefon: 530 162 77 48</a>
+                  <a href="tel:5394580611">Telefon: 05394580611</a>
                   <a href="mailto:UgurOzoglu@example.com">Mail: UgurOzoglu@example.com</a>
                 </div>
               </div>

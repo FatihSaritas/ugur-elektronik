@@ -57,6 +57,11 @@ const brands = [
     url: 'https://voltekelektrik.com.tr/led-ampul-ve-aksesuarlari',
     img: require('../assets/img/Brands/voltek.jpg'),
   },
+  {
+    name: 'SIEMENS',
+    url: 'https://voltekelektrik.com.tr/led-ampul-ve-aksesuarlari',
+    img: require('../assets/img/Brands/siemens.png')
+  },
 ]
 
 function Brands() {

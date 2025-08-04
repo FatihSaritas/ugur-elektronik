@@ -12,14 +12,27 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Tekil şarj cihazı getir (ID ile)
+router.get('/:id', async (req, res) => {
+  try {
+    const charger = await Charger.findById(req.params.id);
+    if (!charger) {
+      return res.status(404).json({ message: 'Şarj cihazı bulunamadı' });
+    }
+    res.json(charger);
+  } catch (err) {
+    res.status(500).json({ message: 'Sunucu hatası', error: err.message });
+  }
+});
+
 // Yeni şarj cihazı ekle
 router.post('/', async (req, res) => {
-  const { name, brand, price, features, image } = req.body;
+  const { name, brand, price, features, images } = req.body;
   if (!name || !brand || !price) {
     return res.status(400).json({ message: 'İsim, marka ve fiyat zorunludur.' });
   }
   try {
-    const charger = new Charger({ name, brand, price, features, image });
+    const charger = new Charger({ name, brand, price, features, images });
     await charger.save();
     res.status(201).json(charger);
   } catch (err) {
