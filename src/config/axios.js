@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-// Vercel'de hem frontend hem backend aynı domain'de çalışacak
+// Vercel'de frontend, Railway'de backend
 const baseURL = process.env.NODE_ENV === 'production' 
-  ? process.env.REACT_APP_API_URL || window.location.origin
-  : 'http://localhost:3000';
+  ? process.env.REACT_APP_API_URL || 'https://ugur-elektronik-production.up.railway.app'
+  : 'http://localhost:5050';
 
 const api = axios.create({
   baseURL: baseURL,
