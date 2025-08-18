@@ -17,7 +17,7 @@ const AdminLogin = ({ onLogin }) => {
     setError('');
     setSuccess(false);
     try {
-      const res = await api.post('http://localhost:5050/api/admin/login', {
+      const res = await api.post('/api/admin/login', {
         email,
         password,
       });
