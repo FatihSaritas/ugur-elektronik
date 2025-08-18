@@ -3,7 +3,7 @@ const router = express.Router();
 
 // /api/test
 router.get('/', (req, res) => {
-  res.status(200).json({ ok: true, route: '/api/test', message: 'OK' });
+  res.status(200).json({ ok: true, route: '/api/test', message: 'OK v2', deployedAt: new Date().toISOString() });
 });
 
 router.get('/simple', (req, res) => {
