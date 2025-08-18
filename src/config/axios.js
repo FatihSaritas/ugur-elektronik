@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-// Monolitik: Production'da ayni origin altinda API '/api' prefix'i ile servis edilir
+// Production: ayni origin kullan (REACT_APP_API_URL varsa kullanir, yoksa "" = same-origin)
 const baseURL = process.env.NODE_ENV === 'production'
-  ? (process.env.REACT_APP_API_URL || '/api')
+  ? (process.env.REACT_APP_API_URL || '')
   : 'http://localhost:5050';
 
 const api = axios.create({
