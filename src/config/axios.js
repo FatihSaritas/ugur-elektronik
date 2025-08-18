@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-// Vercel'de frontend, Railway'de backend
-const baseURL = process.env.NODE_ENV === 'production' 
-  ? process.env.REACT_APP_API_URL || 'https://ugur-elektronik-production.up.railway.app'
+// Monolitik: Production'da ayni origin altinda API '/api' prefix'i ile servis edilir
+const baseURL = process.env.NODE_ENV === 'production'
+  ? (process.env.REACT_APP_API_URL || '/api')
   : 'http://localhost:5050';
 
 const api = axios.create({

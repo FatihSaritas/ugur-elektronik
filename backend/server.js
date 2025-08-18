@@ -16,24 +16,34 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS ayarları
-app.use(cors({
-  origin: [
-    'http://localhost:3000', 
+// CORS ayarlari: Gelistirmede acik, prod'da gerekmedigi icin kapali (ayni origin)
+if (process.env.NODE_ENV !== 'production') {
+  const allowedOrigins = [
+    'http://localhost:3000',
     'http://127.0.0.1:3000',
-    'https://ugur-elektronik-d2g3h5egq-fatihsaritas-projects.vercel.app',
-    'https://ugur-elektronik-k9nopurvt-fatihsaritas-projects.vercel.app',
-    'https://ugur-elektronik-lv12zvd97-fatihsaritas-projects.vercel.app',
-    'https://ugur-elektronik-8bht90syk-fatihsaritas-projects.vercel.app',
-    'https://ugur-elektronik-h6hr2xsaq-fatihsaritas-projects.vercel.app',
-    process.env.FRONTEND_URL
-  ].filter(Boolean),
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+    process.env.FRONTEND_URL,
+    process.env.FRONTEND_URL_2
+  ].filter(Boolean);
+
+  app.use(cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }));
+}
 
 app.use(express.json());
+
+// React build (monolitik deploy icin)
+const clientBuildPath = path.join(__dirname, '..', 'build');
+app.use(express.static(clientBuildPath));
 
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/television', require('./routes/television'));
@@ -50,8 +60,10 @@ app.get('/test', (req, res) => {
   res.status(200).send('Sunucu calisiyor ve test rotasi basarili!');
 });
 
-app.get('/', (req, res) => {
-  res.send('API is running...');
+// SPA fallback: API disindaki tum rotalari React'e gonder
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  res.sendFile(path.join(clientBuildPath, 'index.html'));
 });
 
 const PORT = process.env.PORT || 5050;
