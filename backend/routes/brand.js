@@ -15,6 +15,17 @@ const fixImageUrls = (brand, req) => {
       const host = req.get('host');
       brand.image = `${protocol}://${host}${brand.image}`;
     }
+    // Eğer eski tam URL ise ve uploads altindaysa, host'u guncelle
+    if (brand.image.startsWith('http')) {
+      try {
+        const urlObj = new URL(brand.image);
+        if (urlObj.pathname.startsWith('/uploads/')) {
+          const protocol = req.protocol || 'https';
+          const host = req.get('host');
+          brand.image = `${protocol}://${host}${urlObj.pathname}`;
+        }
+      } catch (_) {}
+    }
     // Eğer zaten tam URL ise, olduğu gibi bırak
   }
   return brand;

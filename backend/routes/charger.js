@@ -16,6 +16,16 @@ const fixImageUrls = (charger, req) => {
         const host = req.get('host');
         return `${protocol}://${host}${imageUrl}`;
       }
+      if (imageUrl.startsWith('http')) {
+        try {
+          const urlObj = new URL(imageUrl);
+          if (urlObj.pathname.startsWith('/uploads/')) {
+            const protocol = req.protocol || 'https';
+            const host = req.get('host');
+            return `${protocol}://${host}${urlObj.pathname}`;
+          }
+        } catch (_) {}
+      }
       // Eğer zaten tam URL ise, olduğu gibi bırak
       return imageUrl;
     });

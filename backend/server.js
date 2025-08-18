@@ -66,6 +66,10 @@ app.get('/test', (req, res) => {
 app.use((req, res, next) => {
   if (req.method !== 'GET') return next();
   if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) return next();
+  // HTML'nin her deploy'da guncel gelmesi icin cache kapat
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   res.sendFile(path.join(clientBuildPath, 'index.html'));
 });
 
