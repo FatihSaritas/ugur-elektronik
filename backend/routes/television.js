@@ -3,7 +3,7 @@ const Television = require('../models/Television');
 const router = express.Router();
 
 // Görsel URL'lerini tam URL'ye çeviren middleware
-const fixImageUrls = (television) => {
+const fixImageUrls = (television, req) => {
   if (television.images && Array.isArray(television.images)) {
     television.images = television.images.map(imageUrl => {
       // Eğer base64 ise, olduğu gibi bırak
@@ -12,7 +12,9 @@ const fixImageUrls = (television) => {
       }
       // Eğer relative path ise, tam URL'ye çevir
       if (imageUrl.startsWith('/uploads/')) {
-        return `https://ugur-elektronik-production-803b.up.railway.app${imageUrl}`;
+        const protocol = req.protocol || 'https';
+        const host = req.get('host');
+        return `${protocol}://${host}${imageUrl}`;
       }
       // Eğer zaten tam URL ise, olduğu gibi bırak
       return imageUrl;
@@ -26,7 +28,7 @@ router.get('/', async (req, res) => {
   try {
     const televisions = await Television.find().sort({ createdAt: -1 });
     // Her televizyon için görsel URL'lerini düzelt
-    const fixedTelevisions = televisions.map(fixImageUrls);
+    const fixedTelevisions = televisions.map((t) => fixImageUrls(t, req));
     res.json(fixedTelevisions);
   } catch (err) {
     res.status(500).json({ message: 'Sunucu hatası', error: err.message });
@@ -41,7 +43,7 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ message: 'Televizyon bulunamadı' });
     }
     // Görsel URL'lerini düzelt
-    const fixedTelevision = fixImageUrls(television);
+    const fixedTelevision = fixImageUrls(television, req);
     res.json(fixedTelevision);
   } catch (err) {
     res.status(500).json({ message: 'Sunucu hatası', error: err.message });

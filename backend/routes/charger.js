@@ -3,7 +3,7 @@ const Charger = require('../models/Charger');
 const router = express.Router();
 
 // Görsel URL'lerini tam URL'ye çeviren middleware
-const fixImageUrls = (charger) => {
+const fixImageUrls = (charger, req) => {
   if (charger.images && Array.isArray(charger.images)) {
     charger.images = charger.images.map(imageUrl => {
       // Eğer base64 ise, olduğu gibi bırak
@@ -12,7 +12,9 @@ const fixImageUrls = (charger) => {
       }
       // Eğer relative path ise, tam URL'ye çevir
       if (imageUrl.startsWith('/uploads/')) {
-        return `https://ugur-elektronik-production-803b.up.railway.app${imageUrl}`;
+        const protocol = req.protocol || 'https';
+        const host = req.get('host');
+        return `${protocol}://${host}${imageUrl}`;
       }
       // Eğer zaten tam URL ise, olduğu gibi bırak
       return imageUrl;
@@ -26,7 +28,7 @@ router.get('/', async (req, res) => {
   try {
     const chargers = await Charger.find().sort({ createdAt: -1 });
     // Her charger için görsel URL'lerini düzelt
-    const fixedChargers = chargers.map(fixImageUrls);
+    const fixedChargers = chargers.map((c) => fixImageUrls(c, req));
     res.json(fixedChargers);
   } catch (err) {
     res.status(500).json({ message: 'Sunucu hatası', error: err.message });
@@ -41,7 +43,7 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ message: 'Şarj cihazı bulunamadı' });
     }
     // Görsel URL'lerini düzelt
-    const fixedCharger = fixImageUrls(charger);
+    const fixedCharger = fixImageUrls(charger, req);
     res.json(fixedCharger);
   } catch (err) {
     res.status(500).json({ message: 'Sunucu hatası', error: err.message });

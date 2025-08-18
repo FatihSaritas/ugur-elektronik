@@ -3,7 +3,7 @@ const Led = require('../models/Led');
 const router = express.Router();
 
 // Görsel URL'lerini tam URL'ye çeviren middleware
-const fixImageUrls = (led) => {
+const fixImageUrls = (led, req) => {
   if (led.images && Array.isArray(led.images)) {
     led.images = led.images.map(imageUrl => {
       // Eğer base64 ise, olduğu gibi bırak
@@ -12,7 +12,9 @@ const fixImageUrls = (led) => {
       }
       // Eğer relative path ise, tam URL'ye çevir
       if (imageUrl.startsWith('/uploads/')) {
-        return `https://ugur-elektronik-production-803b.up.railway.app${imageUrl}`;
+        const protocol = req.protocol || 'https';
+        const host = req.get('host');
+        return `${protocol}://${host}${imageUrl}`;
       }
       // Eğer zaten tam URL ise, olduğu gibi bırak
       return imageUrl;
@@ -26,7 +28,7 @@ router.get('/', async (req, res) => {
   try {
     const leds = await Led.find().sort({ createdAt: -1 });
     // Her LED için görsel URL'lerini düzelt
-    const fixedLeds = leds.map(fixImageUrls);
+    const fixedLeds = leds.map((l) => fixImageUrls(l, req));
     res.json(fixedLeds);
   } catch (err) {
     res.status(500).json({ message: 'Sunucu hatası', error: err.message });
@@ -41,7 +43,7 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ message: 'LED bulunamadı' });
     }
     // Görsel URL'lerini düzelt
-    const fixedLed = fixImageUrls(led);
+    const fixedLed = fixImageUrls(led, req);
     res.json(fixedLed);
   } catch (err) {
     res.status(500).json({ message: 'Sunucu hatası', error: err.message });

@@ -9,6 +9,8 @@ dotenv.config();
 connectDB();
 
 const app = express();
+// Proxy arkasinda dogru protokol bilgisini almak icin
+app.set('trust proxy', 1);
 
 // Basit Logger Middleware'i
 app.use((req, res, next) => {
