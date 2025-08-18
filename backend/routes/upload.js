@@ -8,7 +8,7 @@ const router = express.Router();
 // Disk storage: monolitik deploy icin backend/uploads altina yaz
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const destPath = path.join(__dirname, 'uploads');
+    const destPath = path.join(__dirname, '..', 'uploads');
     if (!fs.existsSync(destPath)) {
       fs.mkdirSync(destPath, { recursive: true });
     }
