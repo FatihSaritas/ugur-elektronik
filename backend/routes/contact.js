@@ -13,16 +13,18 @@ const transporter = nodemailer.createTransport({
 });
 
 // Contact form gönderimi
+router.options('/send', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  return res.status(200).end();
+});
+
 router.post('/send', (req, res, next) => {
   // CORS headers
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
-  
-  // OPTIONS request için
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
   
   next();
 }, [
@@ -44,8 +46,8 @@ router.post('/send', (req, res, next) => {
   
   body('message')
     .trim()
-    .isLength({ min: 10, max: 1000 })
-    .withMessage('Mesaj 10-1000 karakter arasında olmalıdır')
+    .isLength({ min: 5, max: 1000 })
+    .withMessage('Mesaj 5-1000 karakter arasında olmalıdır')
 ], async (req, res) => {
   try {
     console.log('Gelen form verileri:', req.body);
