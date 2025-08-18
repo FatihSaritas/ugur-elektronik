@@ -66,7 +66,7 @@ function ContactMap() {
     setMessage({ type: '', text: '' });
     
     try {
-      const response = await api.post('http://localhost:5050/api/contact/send', formData, {
+      const response = await api.post('/api/contact/send', formData, {
         headers: {
           'Content-Type': 'application/json',
         },
