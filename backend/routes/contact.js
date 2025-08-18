@@ -7,8 +7,17 @@ const router = express.Router();
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.EMAIL_USER, // .env dosyasına eklenecek
-    pass: process.env.EMAIL_PASS  // .env dosyasına eklenecek
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+// Basit transporter dogrulamasi (deploydaki hatalari ortaya cikarmak icin)
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('Mail transporter verify error:', error.message);
+  } else {
+    console.log('Mail transporter hazır.');
   }
 });
 

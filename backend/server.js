@@ -12,9 +12,13 @@ const app = express();
 // Proxy arkasinda dogru protokol bilgisini almak icin
 app.set('trust proxy', 1);
 
-// Basit Logger Middleware'i
+// Ayrintili Logger: method, path, status, sure (ms)
 app.use((req, res, next) => {
-  console.log(`Gelen Istek: ${req.method} ${req.originalUrl}`);
+  const start = Date.now();
+  res.on('finish', () => {
+    const durationMs = Date.now() - start;
+    console.log(`${req.method} ${req.originalUrl} -> ${res.statusCode} ${durationMs}ms`);
+  });
   next();
 });
 
