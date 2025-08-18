@@ -60,9 +60,8 @@ app.get('/test', (req, res) => {
   res.status(200).send('Sunucu calisiyor ve test rotasi basarili!');
 });
 
-// SPA fallback: API disindaki tum rotalari React'e gonder
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api')) return next();
+// SPA fallback: API disindaki tum rotalari React'e gonder (Express v5 icin regex)
+app.get(/^(?!\/api).*/, (req, res) => {
   res.sendFile(path.join(clientBuildPath, 'index.html'));
 });
 
