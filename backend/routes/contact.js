@@ -5,11 +5,13 @@ const router = express.Router();
 
 // Email transporter konfigürasyonu
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
+    pass: process.env.EMAIL_PASS,
+  },
 });
 
 // Basit transporter dogrulamasi (deploydaki hatalari ortaya cikarmak icin)
@@ -117,7 +119,9 @@ router.post('/send', (req, res, next) => {
     console.error('Email gönderim hatası:', error);
     res.status(500).json({
       success: false,
-      message: 'Mesaj gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.'
+      message: 'Mesaj gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.',
+      error: error?.message || 'unknown',
+      code: error?.code || undefined
     });
   }
 });
