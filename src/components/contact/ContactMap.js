@@ -200,7 +200,7 @@ function ContactMap() {
                   <strong> Mağaza</strong>
                   <p className="contact-street">
                     İstanbul / Pendik Fevzi Çakmak Mah. Marmara Cd. Maden Sok. No:1 </p>
-                  <a href="tel:5394580611">Telefon: 05394580611</a>
+                  <a href="tel:5394580611">Telefon: 0532 226 80 75</a>
                   <a href="mailto:UgurOzoglu@example.com">Mail: UgurOzoglu@example.com</a>
                 </div>
               </div>
@@ -208,7 +208,7 @@ function ContactMap() {
                 <div className="contact-info-texts">
                   <strong> Çalışma Saatleri</strong>
                   <p className="contact-date">
-                    Pazartesi - Cumartesi : 09:00 - 19:00</p>
+                    Pazartesi - Cumartesi : 08:00 - 22:00</p>
                   <p>Pazar Kapalı</p>
                 </div>
               </div>
