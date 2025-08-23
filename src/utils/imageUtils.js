@@ -30,7 +30,7 @@ export const fixImageUrl = (imageUrl) => {
     return '';
   }
   
-  // Eğer URL zaten tam URL ise, olduğu gibi döndür
+  // Eğer URL zaten tam URL ise (Cloudinary URL'si gibi), olduğu gibi döndür
   if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
     return imageUrl;
   }
