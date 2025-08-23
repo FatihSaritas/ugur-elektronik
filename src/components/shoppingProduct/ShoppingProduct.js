@@ -12,6 +12,7 @@ import api from '../../config/axios';
 import Pagination from '@mui/material/Pagination';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../Footer';
+import { fixImageUrls, getFallbackImage } from '../../utils/imageUtils';
 
 const categories = [
   { name: 'Televizyon', icon: <TvIcon className="category-icon" /> },
@@ -258,7 +259,7 @@ function ShoppingProduct() {
         brand: tv.brand,
         price: tv.price + ' TL',
         priceRaw: Number(tv.price),
-        images: tv.images || [],
+        images: fixImageUrls(tv.images || []),
         features: tv.features,
         category: 'Televizyon'
       });
@@ -272,7 +273,7 @@ function ShoppingProduct() {
         brand: led.brand,
         price: led.price + ' TL',
         priceRaw: Number(led.price),
-        images: led.images || [],
+        images: fixImageUrls(led.images || []),
         features: led.features,
         category: 'LED'
       });
@@ -286,7 +287,7 @@ function ShoppingProduct() {
         brand: charger.brand,
         price: charger.price + ' TL',
         priceRaw: Number(charger.price),
-        images: charger.images || [],
+        images: fixImageUrls(charger.images || []),
         features: charger.features,
         category: 'Şarj Cihazı'
       });
@@ -304,7 +305,7 @@ function ShoppingProduct() {
         brand: tv.brand,
         price: tv.price + ' TL',
         priceRaw: Number(tv.price),
-        images: tv.images || [],
+        images: fixImageUrls(tv.images || []),
         features: tv.features,
         category: 'Televizyon'
       }));
@@ -315,7 +316,7 @@ function ShoppingProduct() {
         brand: led.brand,
         price: led.price + ' TL',
         priceRaw: Number(led.price),
-        images: led.images || [],
+        images: fixImageUrls(led.images || []),
         features: led.features,
         category: 'LED'
       }));
@@ -326,7 +327,7 @@ function ShoppingProduct() {
         brand: charger.brand,
         price: charger.price + ' TL',
         priceRaw: Number(charger.price),
-        images: charger.images || [],
+        images: fixImageUrls(charger.images || []),
         features: charger.features,
         category: 'Şarj Cihazı'
       }));
@@ -554,6 +555,16 @@ function ShoppingProduct() {
                                       style={{ 
                                         cursor: 'pointer',
                                         userSelect: 'none'
+                                      }}
+                                      onError={(e) => {
+                                        console.error('Görsel yüklenemedi:', product.images[0]);
+                                        console.error('Hata detayı:', e.target.error);
+                                        // Fallback görsel göster
+                                        e.target.src = getFallbackImage();
+                                      }}
+                                      onLoad={(e) => {
+                                        console.log('Görsel başarıyla yüklendi:', product.images[0]);
+                                        console.log('Görsel boyutları:', e.target.naturalWidth, 'x', e.target.naturalHeight);
                                       }}
                                     />
                                     {hasMultipleImages && (

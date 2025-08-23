@@ -41,7 +41,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "postinstall": "npm ci --prefix backend && npm run build",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "render-build": "npm run build && npm ci --prefix backend",
+    "render-start": "cd backend && npm start"
   },
   "engines": {
     "node": ">=20 <21"

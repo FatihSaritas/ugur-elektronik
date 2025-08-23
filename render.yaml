@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: ugur-elektronik
+    env: node
+    plan: free
+    buildCommand: npm run render-build
+    startCommand: npm run render-start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5050
+      - key: RENDER_PROJECT_DIR
+        value: /opt/render/project/src
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+    healthCheckPath: /test
+    autoDeploy: true 

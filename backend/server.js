@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 
 dotenv.config();
 
@@ -11,6 +12,26 @@ connectDB();
 const app = express();
 // Proxy arkasinda dogru protokol bilgisini almak icin
 app.set('trust proxy', 1);
+
+// Uploads klasörünün varlığını garanti et - Render için optimize edildi
+const uploadsDir = process.env.NODE_ENV === 'production' 
+  ? path.join(process.env.RENDER_PROJECT_DIR || __dirname, 'uploads')
+  : path.join(__dirname, 'uploads');
+
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log('Uploads klasörü oluşturuldu:', uploadsDir);
+} else {
+  console.log('Uploads klasörü mevcut:', uploadsDir);
+}
+
+// Uploads klasörünün içeriğini logla
+try {
+  const files = fs.readdirSync(uploadsDir);
+  console.log(`Uploads klasöründe ${files.length} dosya bulundu:`, files.slice(0, 5));
+} catch (error) {
+  console.error('Uploads klasörü okunamadı:', error.message);
+}
 
 // Ayrintili Logger: method, path, status, sure (ms)
 app.use((req, res, next) => {
@@ -51,20 +72,79 @@ app.use(express.json());
 const clientBuildPath = path.join(__dirname, '..', 'build');
 app.use(express.static(clientBuildPath));
 
+// Test rotaları - React app'den önce tanımlanmalı
+app.get('/test', (req, res) => {
+  res.status(200).send('Sunucu calisiyor ve test rotasi basarili!');
+});
+
+// Uploads klasörü test rotası
+app.get('/test-uploads', (req, res) => {
+  try {
+    const uploadsPath = uploadsDir; // Global uploadsDir kullan
+    const files = fs.readdirSync(uploadsPath);
+    
+    // İlk 5 dosyanın detaylarını al
+    const fileDetails = files.slice(0, 5).map(filename => {
+      const filePath = path.join(uploadsPath, filename);
+      const stats = fs.statSync(filePath);
+      return {
+        filename,
+        size: stats.size,
+        created: stats.birthtime,
+        modified: stats.mtime,
+        url: `/uploads/${filename}`
+      };
+    });
+    
+    res.json({ 
+      message: 'Uploads klasörü erişilebilir',
+      fileCount: files.length,
+      uploadsPath,
+      files: fileDetails,
+      environment: process.env.NODE_ENV,
+      host: req.get('host'),
+      xForwardedHost: req.get('x-forwarded-host'),
+      protocol: req.protocol
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      error: 'Uploads klasörü erişilemiyor',
+      details: error.message,
+      uploadsPath: path.join(__dirname, 'uploads')
+    });
+  }
+});
+
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/television', require('./routes/television'));
 app.use('/api/upload', require('./routes/upload'));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Uploads klasörü için statik dosya sunumu - Render için optimize edildi
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+  setHeaders: (res, path) => {
+    res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 yıl cache
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Content-Type', getContentType(path));
+  }
+}));
+
+// Dosya uzantısına göre content type belirle
+function getContentType(filePath) {
+  const ext = path.extname(filePath).toLowerCase();
+  const contentTypes = {
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.png': 'image/png',
+    '.gif': 'image/gif',
+    '.webp': 'image/webp',
+    '.avif': 'image/avif'
+  };
+  return contentTypes[ext] || 'application/octet-stream';
+}
 app.use('/api/led', require('./routes/led'));
 app.use('/api/charger', require('./routes/charger'));
 app.use('/api/brand', require('./routes/brand'));
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/test', require('./test'));
-
-// Basit Test Rotası
-app.get('/test', (req, res) => {
-  res.status(200).send('Sunucu calisiyor ve test rotasi basarili!');
-});
 
 // SPA fallback: API ve upload disindaki GET isteklerini React'e gonder
 app.use((req, res, next) => {
