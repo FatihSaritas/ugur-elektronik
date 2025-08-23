@@ -4,6 +4,7 @@ const connectDB = require('./config/db');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const { migrateImagesToCloudinary } = require('./utils/migrateImages');
 
 dotenv.config();
 
@@ -158,7 +159,18 @@ app.use((req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5050;
-const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const server = app.listen(PORT, async () => {
+  console.log(`Server running on port ${PORT}`);
+  
+  // Production'da migration çalıştır
+  if (process.env.NODE_ENV === 'production') {
+    try {
+      await migrateImagesToCloudinary();
+    } catch (error) {
+      console.error('Migration hatası:', error);
+    }
+  }
+});
 
 // Railway için process handling
 process.on('SIGTERM', () => {
